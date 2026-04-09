@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -9,8 +9,10 @@ const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
-  const { login }               = useAuth();
+  const { login, user }         = useAuth();
   const navigate                = useNavigate();
+
+  if (user) return <Navigate to="/admin" replace />;
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 

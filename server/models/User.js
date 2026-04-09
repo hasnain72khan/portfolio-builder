@@ -2,15 +2,18 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
-  name:      { type: String, required: true },
-  username:  { type: String, required: true, unique: true, lowercase: true, trim: true },
-  email:     { type: String, required: true, unique: true, lowercase: true },
-  password:  { type: String, required: true },
+  name:           { type: String, required: true },
+  username:       { type: String, required: true, unique: true, lowercase: true, trim: true },
+  email:          { type: String, required: true, unique: true, lowercase: true },
+  password:       { type: String, required: true },
+  verified:       { type: Boolean, default: false },
+  verifyToken:    { type: String },
+  verifyExpires:  { type: Date },
 }, { timestamps: true });
 
 // Hash password before save
 UserSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
+  if (!this.isModified('password') || this.$skipPasswordHash) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 

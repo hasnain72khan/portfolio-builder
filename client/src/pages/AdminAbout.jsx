@@ -190,12 +190,12 @@ const AdminAbout = () => {
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">City</label>
-                <input type="text" placeholder="Lahore" className={inputCls} style={inputStyle}
+                <input type="text" placeholder="City" className={inputCls} style={inputStyle}
                   value={form.city} onFocus={focusStyle} onBlur={blurStyle} onChange={set('city')} />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Country</label>
-                <input type="text" placeholder="Pakistan" className={inputCls} style={inputStyle}
+                <input type="text" placeholder="Country" className={inputCls} style={inputStyle}
                   value={form.country} onFocus={focusStyle} onBlur={blurStyle} onChange={set('country')} />
               </div>
             </div>
@@ -208,7 +208,7 @@ const AdminAbout = () => {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Email</label>
-                <input type="email" placeholder="hasnain@email.com" className={inputCls} style={inputStyle}
+                <input type="email" placeholder="Email" className={inputCls} style={inputStyle}
                   value={form.email} onFocus={focusStyle} onBlur={blurStyle} onChange={set('email')} />
               </div>
               <div>

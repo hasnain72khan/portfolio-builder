@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import Register           from './pages/Register';
 import Login              from './pages/Login';
+import VerifyEmail        from './pages/VerifyEmail';
 import Admin              from './pages/Admin';
 import AdminSkills        from './pages/AdminSkills';
 import AdminProjects      from './pages/AdminProjects';
@@ -23,6 +24,7 @@ function App() {
           {/* Auth */}
           <Route path="/register" element={<Register />} />
           <Route path="/login"    element={<Login />} />
+          <Route path="/verify"   element={<VerifyEmail />} />
 
           {/* Public portfolio */}
           <Route path="/portfolio/:username" element={<PublicPortfolio />} />
