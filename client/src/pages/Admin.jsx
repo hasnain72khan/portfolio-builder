@@ -16,14 +16,14 @@ const Admin = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-6 relative"
+      className="min-h-screen flex flex-col items-center justify-center p-6 pt-16 relative"
       style={{ background: '#0f0f13' }}
     >
       <button
         onClick={handleLogout}
-        className="absolute top-6 right-6 flex items-center gap-2 text-slate-500 hover:text-red-400 transition-colors duration-200 text-sm"
+        className="absolute top-4 right-4 flex items-center gap-2 text-slate-500 hover:text-red-400 transition-colors duration-200 text-xs sm:text-sm"
       >
-        <LogOut size={18} /> Logout
+        <LogOut size={16} /> Logout
       </button>
 
       <div className="text-center mb-12 animate-fade-in-up">

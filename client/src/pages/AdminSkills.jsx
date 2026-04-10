@@ -95,7 +95,7 @@ const AdminSkills = () => {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-8 animate-fade-in-up">
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-8 animate-fade-in-up">
           <button
             onClick={() => navigate('/admin')}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-200 transition-colors duration-200 text-sm"
@@ -118,8 +118,8 @@ const AdminSkills = () => {
         </div>
 
         {/* Table */}
-        <div className="glass rounded-2xl overflow-hidden animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-          <table className="w-full text-left">
+        <div className="glass rounded-2xl overflow-x-auto animate-fade-in-up" style={{ animationDelay: '80ms' }}>
+          <table className="w-full text-left min-w-[600px]">
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 {['Skill Name', 'Category', 'Level', 'Actions'].map((h, i) => (
@@ -189,7 +189,7 @@ const AdminSkills = () => {
               <h3 className="text-lg font-bold text-white">Add Skill</h3>
               <button onClick={() => setShowModal(false)} className="text-slate-500 hover:text-slate-300 transition-colors"><X size={22} /></button>
             </div>
-            <form onSubmit={handleAdd} className="p-6 space-y-4">
+            <form onSubmit={handleAdd} className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Skill Name</label>
                 <input required type="text" placeholder="e.g. React.js, Photoshop, Public Speaking, Project Management"

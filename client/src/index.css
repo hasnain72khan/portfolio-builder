@@ -46,6 +46,14 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+input, textarea, select, button {
+  max-width: 100%;
+}
+
 #root {
   min-height: 100svh;
 }

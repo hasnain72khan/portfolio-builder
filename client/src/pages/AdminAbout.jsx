@@ -90,7 +90,7 @@ const AdminAbout = () => {
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-8 animate-fade-in-up">
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-8 animate-fade-in-up">
           <button
             onClick={() => navigate('/admin')}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-200 transition-colors text-sm"
@@ -104,7 +104,7 @@ const AdminAbout = () => {
         <form onSubmit={handleSave} className="space-y-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
 
           {/* Identity */}
-          <div className="glass rounded-2xl p-6 space-y-4">
+          <div className="glass rounded-2xl p-4 sm:p-6 space-y-4 overflow-hidden">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Identity</h3>
 
             {/* Avatar preview + upload */}
@@ -152,7 +152,7 @@ const AdminAbout = () => {
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Full Name</label>
                 <input type="text" placeholder="e.g. John Smith" className={inputCls} style={inputStyle}
@@ -184,10 +184,9 @@ const AdminAbout = () => {
           </div>
 
           {/* Contact */}
-          <div className="glass rounded-2xl p-6 space-y-4">
+          <div className="glass rounded-2xl p-4 sm:p-6 space-y-4 overflow-hidden">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Contact Info</h3>
-
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">City</label>
                 <input type="text" placeholder="City" className={inputCls} style={inputStyle}
@@ -198,11 +197,8 @@ const AdminAbout = () => {
                 <input type="text" placeholder="Country" className={inputCls} style={inputStyle}
                   value={form.country} onFocus={focusStyle} onBlur={blurStyle} onChange={set('country')} />
               </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Location <span className="normal-case text-slate-600">(optional override)</span></label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Location <span className="normal-case text-slate-600">(optional)</span></label>
                 <input type="text" placeholder="e.g. Remote" className={inputCls} style={inputStyle}
                   value={form.location} onFocus={focusStyle} onBlur={blurStyle} onChange={set('location')} />
               </div>
@@ -216,35 +212,25 @@ const AdminAbout = () => {
                 <input type="text" placeholder="+92 300 0000000" className={inputCls} style={inputStyle}
                   value={form.phone} onFocus={focusStyle} onBlur={blurStyle} onChange={set('phone')} />
               </div>
+            </div>
+          </div>
+
+          {/* Social & Links */}
+          <div className="glass rounded-2xl p-4 sm:p-6 space-y-4 overflow-hidden">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Social & Links</h3>
+            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">LinkedIn Profile</label>
-                <div className="flex items-center rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <span className="px-3 py-2.5 text-xs text-slate-600 border-r whitespace-nowrap" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                    linkedin.com/in/
-                  </span>
-                  <input type="text" placeholder="hasnain-khan"
-                    className="flex-1 px-3 py-2.5 text-slate-200 placeholder:text-slate-600 outline-none text-sm bg-transparent"
-                    onFocus={focusStyle} onBlur={blurStyle}
-                    value={form.linkedin} onChange={set('linkedin')} />
-                </div>
+                <input type="text" placeholder="linkedin.com/in/hasnain-khan" className={inputCls} style={inputStyle}
+                  value={form.linkedin} onFocus={focusStyle} onBlur={blurStyle} onChange={set('linkedin')} />
               </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">GitHub Profile</label>
-                <div className="flex items-center rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <span className="px-3 py-2.5 text-xs text-slate-600 border-r whitespace-nowrap" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                    github.com/
-                  </span>
-                  <input type="text" placeholder="username"
-                    className="flex-1 px-3 py-2.5 text-slate-200 placeholder:text-slate-600 outline-none text-sm bg-transparent"
-                    onFocus={focusStyle} onBlur={blurStyle}
-                    value={form.github} onChange={set('github')} />
-                </div>
+                <input type="text" placeholder="github.com/username" className={inputCls} style={inputStyle}
+                  value={form.github} onFocus={focusStyle} onBlur={blurStyle} onChange={set('github')} />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Resume URL <span className="normal-case text-slate-600">(Google Drive, Dropbox, etc.)</span></label>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Resume URL <span className="normal-case text-slate-600">(optional)</span></label>
                 <input type="text" placeholder="https://drive.google.com/..." className={inputCls} style={inputStyle}
                   value={form.resumeUrl} onFocus={focusStyle} onBlur={blurStyle} onChange={set('resumeUrl')} />
               </div>
@@ -252,9 +238,9 @@ const AdminAbout = () => {
           </div>
 
           {/* Stats */}
-          <div className="glass rounded-2xl p-6 space-y-4">
+          <div className="glass rounded-2xl p-4 sm:p-6 space-y-4 overflow-hidden">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Stats</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Years Exp.</label>
                 <input type="text" placeholder="3+" className={inputCls} style={inputStyle}

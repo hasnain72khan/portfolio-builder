@@ -45,14 +45,14 @@ const AdminExperience = () => {
   return (
     <div className="min-h-screen p-6 md:p-8" style={{ background: '#0f0f13' }}>
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8 animate-fade-in-up">
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-8 animate-fade-in-up">
           <button onClick={() => navigate('/admin')} className="flex items-center gap-2 text-slate-500 hover:text-slate-200 transition-colors text-sm"><ArrowLeft size={18} /> Back</button>
           <h2 className="text-xl font-bold text-white tracking-tight">Experience Management</h2>
           <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Plus size={16} /> Add</button>
         </div>
 
-        <div className="glass rounded-2xl overflow-hidden animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-          <table className="w-full text-left">
+        <div className="glass rounded-2xl overflow-x-auto animate-fade-in-up" style={{ animationDelay: '80ms' }}>
+          <table className="w-full text-left min-w-[600px]">
             <thead><tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               {['Title', 'Company', 'Duration', 'Actions'].map((h, i) => (
                 <th key={h} className={`px-5 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-500 ${i === 3 ? 'text-right' : ''}`}>{h}</th>
@@ -94,7 +94,7 @@ const AdminExperience = () => {
               <h3 className="text-lg font-bold text-white">Add Experience</h3>
               <button onClick={() => setShowModal(false)} className="text-slate-500 hover:text-slate-300"><X size={22} /></button>
             </div>
-            <form onSubmit={handleAdd} className="p-6 space-y-4">
+            <form onSubmit={handleAdd} className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Job Title / Role</label>
                 <input required type="text" placeholder="e.g. Senior Developer, Marketing Manager, Graphic Designer" className={inputCls} style={inputStyle} value={form.title} onFocus={focusStyle} onBlur={blurStyle} onChange={set('title')} />
