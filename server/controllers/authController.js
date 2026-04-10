@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { sendVerificationEmail } = require('../utils/sendEmail');
 const bcrypt = require('bcryptjs');
+const { sendVerificationEmail } = require('../utils/sendEmail');
 
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
