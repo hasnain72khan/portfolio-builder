@@ -16,8 +16,8 @@ const ServicesSection = ({ services }) => {
             return (
               <SurfaceCard key={s._id} className="p-5 flex gap-4 transition-all duration-300 group" hoverable>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
-                  style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.25)' }}>
-                  <IconComponent size={18} className="text-violet-400" />
+                  style={{ background: 'rgba(var(--brand-rgb), 0.15)', border: '1px solid rgba(var(--brand-rgb), 0.25)' }}>
+                  <IconComponent size={18} style={{ color: 'var(--color-brand)' }} />
                 </div>
                 <div>
                   <p className="font-semibold text-sm mb-1" style={{ color: 'var(--color-heading)' }}>{s.title}</p>

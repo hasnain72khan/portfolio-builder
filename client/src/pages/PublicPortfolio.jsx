@@ -11,6 +11,7 @@ import {
 } from '../components/portfolio';
 import { NAV } from '../components/portfolio/constants';
 import { capitalizeName, groupSkillsByCategory, updateMeta } from '../components/portfolio/utils';
+import { SinglePageLayout, MinimalLayout } from '../components/portfolio/templates';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -45,6 +46,24 @@ const PublicPortfolio = () => {
     isDark ? root.classList.remove('light') : root.classList.add('light');
     localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
+
+  /* Apply custom accent color */
+  useEffect(() => {
+    if (data?.about?.accentColor) {
+      const c = data.about.accentColor;
+      const root = document.documentElement;
+      root.style.setProperty('--color-brand', c);
+      // Parse hex to rgb for rgba usage
+      const r = parseInt(c.slice(1, 3), 16);
+      const g = parseInt(c.slice(3, 5), 16);
+      const b = parseInt(c.slice(5, 7), 16);
+      root.style.setProperty('--brand-rgb', `${r},${g},${b}`);
+    }
+    return () => {
+      document.documentElement.style.removeProperty('--color-brand');
+      document.documentElement.style.removeProperty('--brand-rgb');
+    };
+  }, [data]);
 
   /* Fetch portfolio data */
   useEffect(() => {
@@ -99,14 +118,14 @@ const PublicPortfolio = () => {
       <div className="text-center">
         <p className="text-6xl mb-4">🔍</p>
         <h2 className="text-2xl font-bold text-white mb-2">Portfolio not found</h2>
-        <p className="text-slate-500">No portfolio exists for <span className="text-violet-400">@{username}</span></p>
+        <p className="text-slate-500">No portfolio exists for <span style={{ color: 'var(--color-brand)' }}>@{username}</span></p>
       </div>
     </div>
   );
 
   if (!data) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f0f13' }}>
-      <div className="w-8 h-8 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }} />
     </div>
   );
 
@@ -114,7 +133,17 @@ const PublicPortfolio = () => {
   const displayName = capitalizeName(about?.name || data.user?.name || '');
   const initials = displayName ? displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '';
   const handleResumeClick = () => { setShowResumeModal(true); closeMobileNav(); };
+  const template = about?.template || 'sidebar';
 
+  // Render alternative templates
+  if (template === 'single-page') {
+    return <SinglePageLayout data={data} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
+  }
+  if (template === 'minimal') {
+    return <MinimalLayout data={data} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
+  }
+
+  // Default: sidebar layout
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
 
@@ -161,7 +190,7 @@ const PublicPortfolio = () => {
         <button
           onClick={() => document.getElementById('portfolio-main')?.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed z-50 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', boxShadow: '0 4px 20px rgba(124,58,237,0.4)', bottom: '1.5rem', right: '5rem' }}
+          style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))`, boxShadow: `0 4px 20px rgba(var(--brand-rgb), 0.4)`, bottom: '1.5rem', right: '5rem' }}
           aria-label="Scroll to top"
         >
           <ArrowUp size={18} />

@@ -18,6 +18,7 @@ const EducationSection = ({ education }) => {
               dateRange={`${edu.startDate} — ${edu.endDate || 'Present'}`}
               description={edu.description}
               dotColor="bg-teal-400"
+              brandDot={false}
             />
           ))}
         </div>

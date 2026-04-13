@@ -5,6 +5,7 @@
   --color-brand:       #7c3aed;
   --color-brand-light: #a78bfa;
   --color-brand-glow:  rgba(124, 58, 237, 0.35);
+  --brand-rgb:         124, 58, 237;
   --color-bg:          #0b0b0f;
   --color-sidebar:     #111118;
   --color-surface:     #111118;
@@ -201,6 +202,10 @@ select option {
 }
 
 /* ─── Loading skeleton ──────────────────────────────────────── */
+@keyframes skillBarFill {
+  from { width: 0; }
+}
+
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }

@@ -12,6 +12,8 @@ const AdminAbout = () => {
     email: '', phone: '', linkedin: '', github: '', resumeUrl: '',
     yearsExp: '', projectCount: '', techCount: '',
     openToWork: true,
+    accentColor: '#7c3aed',
+    template: 'sidebar',
   });
   const [loading, setLoading] = useState(true);
   const [toast, setToast]     = useState(null);
@@ -167,6 +169,48 @@ const AdminAbout = () => {
                 className="w-4 h-4 accent-violet-500"
               />
               <label htmlFor="openToWork" className="text-sm text-slate-300">Show "Open to Work" badge</label>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Accent Color</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={form.accentColor || '#7c3aed'}
+                  onChange={e => setForm(f => ({ ...f, accentColor: e.target.value }))}
+                  className="w-10 h-10 rounded-lg cursor-pointer border-0"
+                  style={{ background: 'transparent' }}
+                />
+                <span className="text-sm text-slate-400 font-mono">{form.accentColor || '#7c3aed'}</span>
+                <div className="flex gap-2 ml-2">
+                  {['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4'].map(c => (
+                    <button key={c} type="button" onClick={() => setForm(f => ({ ...f, accentColor: c }))}
+                      className="w-6 h-6 rounded-full transition-transform hover:scale-125"
+                      style={{ background: c, border: form.accentColor === c ? '2px solid white' : '2px solid transparent' }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Portfolio Template</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { id: 'sidebar',     label: 'Sidebar',     desc: 'Fixed sidebar + scrollable content' },
+                  { id: 'single-page', label: 'Single Page', desc: 'Full-width sections, no sidebar' },
+                  { id: 'minimal',     label: 'Minimal',     desc: 'Clean, centered, less is more' },
+                ].map(t => (
+                  <button key={t.id} type="button" onClick={() => setForm(f => ({ ...f, template: t.id }))}
+                    className="p-3 rounded-xl text-left transition-all duration-200"
+                    style={{
+                      background: form.template === t.id ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${form.template === t.id ? 'rgba(124,58,237,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                    }}>
+                    <p className="text-sm font-semibold" style={{ color: form.template === t.id ? '#a78bfa' : '#e2e8f0' }}>{t.label}</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: '#64748b' }}>{t.desc}</p>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

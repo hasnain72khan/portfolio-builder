@@ -8,13 +8,13 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
 
     <div className="flex flex-col items-center text-center px-8 pt-12 pb-8">
       <div className="w-28 h-28 rounded-2xl flex-shrink-0 overflow-hidden flex items-center justify-center text-4xl font-extrabold text-white mb-5"
-        style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: '0 0 40px rgba(124,58,237,0.35)' }}>
+        style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.7))`, boxShadow: `0 0 40px rgba(var(--brand-rgb), 0.35)` }}>
         {about?.avatar
           ? <img src={about.avatar} alt={displayName} className="w-full h-full object-cover" />
           : initials}
       </div>
       <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--color-heading)' }}>{displayName}</h1>
-      {about?.title && <p className="text-xs font-semibold uppercase tracking-widest mt-1" style={{ color: '#a78bfa' }}>{about.title}</p>}
+      {about?.title && <p className="text-xs font-semibold uppercase tracking-widest mt-1" style={{ color: 'var(--color-brand)' }}>{about.title}</p>}
       {about?.openToWork && (
         <div className="flex items-center gap-2 mt-4 px-3 py-1.5 rounded-full text-xs font-medium"
           style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#6ee7b7' }}>
@@ -33,13 +33,13 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
         { icon: Phone,  text: about?.phone, href: about?.phone ? `tel:${about.phone}` : null },
       ].filter(i => i.text).map(({ icon: Icon, text, href }) => (
         href ? (
-          <a key={text} href={href} className="flex items-center gap-3 text-sm hover:text-violet-400 transition-colors" style={{ color: 'var(--color-text-sub)' }}>
-            <Icon size={15} className="text-violet-400 flex-shrink-0" />
+          <a key={text} href={href} className="flex items-center gap-3 text-sm transition-colors" style={{ color: 'var(--color-text-sub)' }}>
+            <Icon size={15} className="flex-shrink-0" style={{ color: 'var(--color-brand)' }} />
             <span className="truncate">{text}</span>
           </a>
         ) : (
           <div key={text} className="flex items-center gap-3 text-sm" style={{ color: 'var(--color-text-sub)' }}>
-            <Icon size={15} className="text-violet-400 flex-shrink-0" />
+            <Icon size={15} className="flex-shrink-0" style={{ color: 'var(--color-brand)' }} />
             <span className="truncate">{text}</span>
           </div>
         )
@@ -47,18 +47,18 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
       {about?.linkedin && (
         <a href={about.linkedin.startsWith('http') ? about.linkedin : `https://www.linkedin.com/in/${about.linkedin}`}
           target="_blank" rel="noreferrer noopener"
-          className="flex items-center gap-3 text-sm hover:text-violet-400 transition-colors group"
+          className="flex items-center gap-3 text-sm transition-colors group"
           style={{ color: 'var(--color-text-sub)' }}>
-          <LinkedInIcon size={15} className="text-violet-400 flex-shrink-0" />
+          <LinkedInIcon size={15} className="flex-shrink-0" style={{ color: 'var(--color-brand)' }} />
           <span className="truncate group-hover:underline">LinkedIn</span>
         </a>
       )}
       {about?.github && (
         <a href={about.github.startsWith('http') ? about.github : `https://github.com/${about.github}`}
           target="_blank" rel="noreferrer noopener"
-          className="flex items-center gap-3 text-sm hover:text-violet-400 transition-colors group"
+          className="flex items-center gap-3 text-sm transition-colors group"
           style={{ color: 'var(--color-text-sub)' }}>
-          <GitHubIcon size={15} className="text-violet-400 flex-shrink-0" />
+          <GitHubIcon size={15} className="flex-shrink-0" style={{ color: 'var(--color-brand)' }} />
           <span className="truncate group-hover:underline">GitHub</span>
         </a>
       )}
@@ -72,9 +72,9 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
         <button key={id} onClick={() => scrollTo(id)}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 mb-1"
           style={{
-            background: active === id ? 'rgba(124,58,237,0.15)' : 'transparent',
-            color: active === id ? '#a78bfa' : 'var(--color-text-muted)',
-            border: active === id ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
+            background: active === id ? `rgba(var(--brand-rgb), 0.15)` : 'transparent',
+            color: active === id ? 'var(--color-brand)' : 'var(--color-text-muted)',
+            border: active === id ? `1px solid rgba(var(--brand-rgb), 0.25)` : '1px solid transparent',
           }}>
           <Icon size={16} />{label}
           {active === id && <ChevronRight size={14} className="ml-auto" />}
@@ -88,13 +88,13 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
       <button
         onClick={onResumeClick}
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-        style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+        style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
         <Download size={15} /> Download Resume
       </button>
       <button onClick={() => setIsDark(d => !d)}
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
         style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--color-text-sub)' }}>
-        {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} className="text-violet-400" />}
+        {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} style={{ color: 'var(--color-brand)' }} />}
         {isDark ? 'Light Mode' : 'Dark Mode'}
       </button>
       <ShareButton name={displayName} title={about?.title || ''} />

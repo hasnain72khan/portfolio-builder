@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+import Landing           from './pages/Landing';
 import Register           from './pages/Register';
 import Login              from './pages/Login';
 import VerifyEmail        from './pages/VerifyEmail';
@@ -32,8 +33,8 @@ function App() {
           {/* Public portfolio */}
           <Route path="/portfolio/:username" element={<PublicPortfolio />} />
 
-          {/* Redirect root to login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Landing */}
+          <Route path="/" element={<Landing />} />
 
           {/* Protected admin routes */}
           <Route path="/admin"          element={<ProtectedRoute><Admin /></ProtectedRoute>} />

@@ -12,11 +12,11 @@ const TestimonialsSection = ({ testimonials }) => {
         <div className="grid sm:grid-cols-2 gap-4">
           {testimonials.map((t) => (
             <SurfaceCard key={t._id} className="p-5 relative">
-              <Quote size={24} className="text-violet-500/20 absolute top-4 right-4" />
+              <Quote size={24} className="absolute top-4 right-4" style={{ color: 'rgba(var(--brand-rgb), 0.2)' }} />
               <p className="text-sm leading-relaxed mb-4 italic" style={{ color: 'var(--color-text-sub)' }}>"{t.text}"</p>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+                  style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.7))` }}>
                   {t.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div>

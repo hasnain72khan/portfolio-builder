@@ -17,7 +17,6 @@ const ExperienceSection = ({ experience }) => {
               subtitle={`${exp.company}${exp.location ? ' · ' + exp.location : ''}`}
               dateRange={`${exp.startDate} — ${exp.endDate || 'Present'}`}
               description={exp.description}
-              dotColor="bg-violet-400"
             />
           ))}
         </div>

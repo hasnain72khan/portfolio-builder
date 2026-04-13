@@ -12,8 +12,8 @@ const MobileNav = ({ mobileNav, mobileNavClosing, active, scrollTo, onResumeClic
           <button key={id} onClick={() => scrollTo(id)}
             className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 animate-fade-in-up"
             style={{
-              background: active === id ? 'rgba(124,58,237,0.15)' : 'transparent',
-              color: active === id ? '#a78bfa' : 'var(--color-text-muted)',
+              background: active === id ? 'rgba(var(--brand-rgb), 0.15)' : 'transparent',
+              color: active === id ? 'var(--color-brand)' : 'var(--color-text-muted)',
               animationDelay: `${i * 50}ms`,
             }}>
             <Icon size={16} />{label}
@@ -25,7 +25,7 @@ const MobileNav = ({ mobileNav, mobileNavClosing, active, scrollTo, onResumeClic
         <button
           onClick={onResumeClick}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+          style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
           <Download size={15} /> Download Resume
         </button>
         <ShareButton name={displayName} title={about?.title || ''} />

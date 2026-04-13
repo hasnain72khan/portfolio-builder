@@ -11,7 +11,7 @@ const AdminProjects = () => {
   const [editItem, setEditItem]   = useState(null);
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
-  const [form, setForm]           = useState({ title: '', pageType: '', description: '', techStack: '', liveLink: '', githubLink: '' });
+  const [form, setForm]           = useState({ title: '', pageType: '', description: '', image: '', techStack: '', liveLink: '', githubLink: '' });
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -62,11 +62,11 @@ const AdminProjects = () => {
 
   const openEdit = (item) => {
     setEditItem(item);
-    setForm({ title: item.title || '', pageType: item.pageType || '', description: item.description || '', techStack: item.techStack?.join(', ') || '', liveLink: item.liveLink || '', githubLink: item.githubLink || '' });
+    setForm({ title: item.title || '', pageType: item.pageType || '', description: item.description || '', image: item.image || '', techStack: item.techStack?.join(', ') || '', liveLink: item.liveLink || '', githubLink: item.githubLink || '' });
     setShowModal(true);
   };
 
-  const openAdd = () => { setEditItem(null); setForm({ title: '', pageType: '', description: '', techStack: '', liveLink: '', githubLink: '' }); setShowModal(true); };
+  const openAdd = () => { setEditItem(null); setForm({ title: '', pageType: '', description: '', image: '', techStack: '', liveLink: '', githubLink: '' }); setShowModal(true); };
   const closeModal = () => { setShowModal(false); setEditItem(null); };
 
   return (
@@ -105,7 +105,8 @@ const AdminProjects = () => {
         <FormField label="Project Title" required placeholder="e.g. Portfolio Website, Mobile App, Brand Identity" value={form.title} onChange={set('title')} />
         <FormField label="Project Type" placeholder="e.g. Web App, Mobile App, Landing Page, Logo Design, E-commerce" value={form.pageType} onChange={set('pageType')} />
         <FormField label="Tools / Tech Stack" placeholder="e.g. React, Figma, Photoshop, Node.js, WordPress (comma separated)" value={form.techStack} onChange={set('techStack')} />
-        <FormField label="Description" required rows={3} placeholder="Briefly describe what this project is about and your role in it..." value={form.description} onChange={set('description')} />
+        <FormField label="Description" required rows={3} placeholder="Briefly describe what this project is about..." value={form.description} onChange={set('description')} />
+        <FormField label="Project Image URL" type="url" placeholder="https://example.com/screenshot.png (optional)" value={form.image} onChange={set('image')} />
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Live URL" type="url" placeholder="https://example.com" value={form.liveLink} onChange={set('liveLink')} />
           <FormField label="GitHub URL" type="url" placeholder="https://github.com/..." value={form.githubLink} onChange={set('githubLink')} />

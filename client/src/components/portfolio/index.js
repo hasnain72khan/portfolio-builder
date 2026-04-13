@@ -4,6 +4,7 @@ export { default as TimelineItem } from './TimelineItem';
 export { default as StatCard } from './StatCard';
 export { default as LinkedInIcon } from './LinkedInIcon';
 export { default as GitHubIcon } from './GitHubIcon';
+export { default as ScrollToTop } from './ScrollToTop';
 
 export { default as Sidebar } from './Sidebar';
 export { default as MobileHeader } from './MobileHeader';

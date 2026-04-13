@@ -11,17 +11,24 @@ const ProjectsSection = ({ projects }) => {
         <SectionHeader icon={Layers} title="Featured Projects" />
         <div className="space-y-4">
           {projects.map((project) => (
-            <SurfaceCard key={project._id} className="group p-6 transition-all duration-300" hoverable>
+            <SurfaceCard key={project._id} className="group overflow-hidden transition-all duration-300" hoverable>
+              {project.image && (
+                <div className="overflow-hidden">
+                  <img src={project.image} alt={project.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+              )}
+              <div className="p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
-                    style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+                    style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.7))` }}>
                     {project.title?.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-bold text-base truncate" style={{ color: 'var(--color-heading)' }}>{project.title}</h3>
                     {project.pageType && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                        style={{ background: 'rgba(var(--brand-rgb), 0.2)', color: 'rgba(var(--brand-rgb), 0.8)', border: '1px solid rgba(var(--brand-rgb), 0.3)' }}>
                         {project.pageType}
                       </span>
                     )}
@@ -31,7 +38,7 @@ const ProjectsSection = ({ projects }) => {
                   {project.liveLink && (
                     <a href={project.liveLink} target="_blank" rel="noreferrer noopener"
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white"
-                      style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                      style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
                       Live
                     </a>
                   )}
@@ -52,6 +59,7 @@ const ProjectsSection = ({ projects }) => {
                     {tech}
                   </span>
                 ))}
+              </div>
               </div>
             </SurfaceCard>
           ))}

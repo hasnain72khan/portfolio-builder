@@ -19,6 +19,8 @@ const AboutSchema = new mongoose.Schema({
   projectCount: { type: String, default: '20+' },
   techCount:    { type: String, default: '10+' },
   openToWork:   { type: Boolean, default: true },
+  accentColor:  { type: String, default: '#7c3aed' },
+  template:     { type: String, default: 'sidebar', enum: ['sidebar', 'single-page', 'minimal'] },
 });
 
 module.exports = mongoose.model('About', AboutSchema);
