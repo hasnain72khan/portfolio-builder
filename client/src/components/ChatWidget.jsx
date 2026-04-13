@@ -42,8 +42,9 @@ const ChatWidget = ({ ownerName = '', ownerEmail = '', ownerPhone = '', ownerAva
     <>
       <button
         onClick={() => { setOpen(o => !o); if (sent) reset(); }}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110"
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110"
         style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', boxShadow: '0 0 24px rgba(124,58,237,0.45)' }}
+        aria-label={open ? 'Close chat' : 'Open chat'}
       >
         {open ? <X size={22} className="text-white" /> : <MessageCircle size={22} className="text-white" />}
       </button>

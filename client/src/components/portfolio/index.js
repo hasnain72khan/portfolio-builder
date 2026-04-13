@@ -1,0 +1,18 @@
+export { default as SectionHeader } from './SectionHeader';
+export { default as SurfaceCard } from './SurfaceCard';
+export { default as TimelineItem } from './TimelineItem';
+export { default as StatCard } from './StatCard';
+export { default as LinkedInIcon } from './LinkedInIcon';
+export { default as GitHubIcon } from './GitHubIcon';
+
+export { default as Sidebar } from './Sidebar';
+export { default as MobileHeader } from './MobileHeader';
+export { default as MobileNav } from './MobileNav';
+export { default as MobileHero } from './MobileHero';
+export { default as AboutSection } from './AboutSection';
+export { default as ServicesSection } from './ServicesSection';
+export { default as SkillsSection } from './SkillsSection';
+export { default as ExperienceSection } from './ExperienceSection';
+export { default as EducationSection } from './EducationSection';
+export { default as ProjectsSection } from './ProjectsSection';
+export { default as TestimonialsSection } from './TestimonialsSection';

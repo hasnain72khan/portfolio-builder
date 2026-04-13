@@ -56,6 +56,32 @@ input, textarea, select, button {
 
 #root {
   min-height: 100svh;
+  overflow: hidden;
+}
+
+/* ─── Custom scrollbar (thin, auto-hide) ────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.4);
+}
+
+/* Hide scrollbar by default, show on hover */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.sidebar-scroll:hover {
+  scrollbar-color: rgba(124, 58, 237, 0.2) transparent;
 }
 
 /* ─── Glassmorphism ─────────────────────────────────────────── */
@@ -133,6 +159,22 @@ select option {
   animation: bounce-y 1.4s ease-in-out infinite;
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-down {
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+@keyframes slideUpOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-20px); }
+}
+.animate-slide-up-out {
+  animation: slideUpOut 0.2s ease-in forwards;
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(24px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -147,4 +189,25 @@ select option {
 }
 .animate-toast-in {
   animation: toastIn 0.3s ease-out forwards;
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Loading skeleton ──────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--color-surface-2) 50%, var(--glass-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }

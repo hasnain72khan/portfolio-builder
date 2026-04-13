@@ -9,7 +9,10 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: '*', credentials: true }
+  cors: {
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(s => s.trim()) : '*',
+    credentials: true,
+  }
 });
 
 // Connect to Database

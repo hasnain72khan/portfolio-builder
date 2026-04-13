@@ -27,7 +27,7 @@ const Admin = () => {
       </button>
 
       <div className="text-center mb-12 animate-fade-in-up">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Management Hub</h1>
+        <h1 className="text-3xl font-extrabold text-white tracking-tight">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-2">Welcome back, <span className="text-violet-400">{capitalizeName(user?.name)}</span></p>
         {user?.username && (
           <p className="text-slate-600 text-xs mt-1">

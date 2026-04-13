@@ -11,6 +11,10 @@ const UserSchema = new mongoose.Schema({
   verifyExpires:  { type: Date },
 }, { timestamps: true });
 
+// Indexes for faster queries
+UserSchema.index({ email: 1 });
+UserSchema.index({ username: 1 });
+
 // Hash password before save
 UserSchema.pre('save', async function () {
   if (!this.isModified('password') || this.$skipPasswordHash) return;
