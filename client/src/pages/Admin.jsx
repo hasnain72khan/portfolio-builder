@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Layers, Code2, LogOut, Briefcase, User, GraduationCap, Clock, MessageSquare } from 'lucide-react';
+import { Layers, Code2, LogOut, Briefcase, User, GraduationCap, Clock, MessageSquare, BarChart3, FileText, Copy, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const capitalizeName = (name) =>
@@ -152,6 +152,69 @@ const Admin = () => {
             <span className="text-xs text-slate-500 mt-0.5 block">Client reviews & feedback</span>
           </div>
         </button>
+        {/* Analytics */}
+        <button
+          onClick={() => navigate('/admin/analytics')}
+          className="group glass rounded-2xl p-8 flex flex-col items-center gap-4 border border-white/[0.06] hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 animate-fade-in-up"
+          style={{ animationDelay: '640ms' }}
+        >
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            style={{ background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.25)' }}>
+            <BarChart3 size={26} className="text-cyan-400" />
+          </div>
+          <div>
+            <span className="text-lg font-bold text-white block">Analytics</span>
+            <span className="text-xs text-slate-500 mt-0.5 block">Views & engagement</span>
+          </div>
+        </button>
+
+        {/* Cover Letters */}
+        <button
+          onClick={() => navigate('/admin/cover-letters')}
+          className="group glass rounded-2xl p-8 flex flex-col items-center gap-4 border border-white/[0.06] hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 animate-fade-in-up"
+          style={{ animationDelay: '720ms' }}
+        >
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)' }}>
+            <FileText size={26} className="text-orange-400" />
+          </div>
+          <div>
+            <span className="text-lg font-bold text-white block">Cover Letters</span>
+            <span className="text-xs text-slate-500 mt-0.5 block">Job application letters</span>
+          </div>
+        </button>
+
+        {/* Resume Versions */}
+        <button
+          onClick={() => navigate('/admin/resume-versions')}
+          className="group glass rounded-2xl p-8 flex flex-col items-center gap-4 border border-white/[0.06] hover:border-lime-500/40 hover:shadow-xl hover:shadow-lime-500/10 transition-all duration-300 animate-fade-in-up"
+          style={{ animationDelay: '800ms' }}
+        >
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            style={{ background: 'rgba(132,204,22,0.12)', border: '1px solid rgba(132,204,22,0.25)' }}>
+            <Copy size={26} className="text-lime-400" />
+          </div>
+          <div>
+            <span className="text-lg font-bold text-white block">Resume Versions</span>
+            <span className="text-xs text-slate-500 mt-0.5 block">Save & manage versions</span>
+          </div>
+        </button>
+
+        {/* ATS Score */}
+        {/* <button
+          onClick={() => navigate('/admin/ats')}
+          className="group glass rounded-2xl p-8 flex flex-col items-center gap-4 border border-white/[0.06] hover:border-sky-500/40 hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 animate-fade-in-up"
+          style={{ animationDelay: '880ms' }}
+        >
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            style={{ background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.25)' }}>
+            <Search size={26} className="text-sky-400" />
+          </div>
+          <div>
+            <span className="text-lg font-bold text-white block">ATS Score</span>
+            <span className="text-xs text-slate-500 mt-0.5 block">Check resume vs job description</span>
+          </div>
+        </button> */}
 
       </div>
     </div>

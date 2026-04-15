@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, X, Upload } from 'lucide-react';
+import { ArrowLeft, Save, X, Upload, FileUp } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import { parseLinkedInText } from '../utils/parseLinkedInPDF';
 
 const AdminAbout = () => {
   const [form, setForm] = useState({
@@ -14,6 +15,7 @@ const AdminAbout = () => {
     openToWork: true,
     accentColor: '#7c3aed',
     template: 'sidebar',
+    language: 'en',
   });
   const [loading, setLoading] = useState(true);
   const [toast, setToast]     = useState(null);
@@ -68,6 +70,42 @@ const AdminAbout = () => {
   const blurStyle  = (e) => (e.target.style.boxShadow = 'none');
   const set        = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }));
 
+  const linkedinFileRef = useRef(null);
+  const handleLinkedInImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const parsed = parseLinkedInText(reader.result);
+      if (!parsed) return showToast('Could not parse file. Try a .txt export.', 'error');
+      // Merge parsed data into form (don't overwrite existing non-empty fields)
+      setForm(f => ({
+        ...f,
+        name: f.name || parsed.name || '',
+        title: f.title || parsed.title || '',
+        bio: f.bio || parsed.bio || '',
+        email: f.email || parsed.email || '',
+        phone: f.phone || parsed.phone || '',
+        linkedin: f.linkedin || parsed.linkedin || '',
+        city: f.city || (parsed.location ? parsed.location.split(',')[0]?.trim() : ''),
+        country: f.country || (parsed.location ? parsed.location.split(',')[1]?.trim() : ''),
+      }));
+      // Save experience, education, skills to backend
+      if (parsed.experience?.length) {
+        parsed.experience.forEach(exp => api.post('/experience', exp).catch(() => {}));
+      }
+      if (parsed.education?.length) {
+        parsed.education.forEach(edu => api.post('/education', edu).catch(() => {}));
+      }
+      if (parsed.skills?.length) {
+        parsed.skills.forEach(sk => api.post('/skills', sk).catch(() => {}));
+      }
+      showToast(`Imported: ${parsed.experience?.length || 0} jobs, ${parsed.education?.length || 0} education, ${parsed.skills?.length || 0} skills`);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f0f13' }}>
       <p className="text-slate-500 text-sm">Loading...</p>
@@ -87,7 +125,14 @@ const AdminAbout = () => {
             <ArrowLeft size={18} /> Back
           </button>
           <h2 className="text-xl font-bold text-white tracking-tight">About Management</h2>
-          <div className="w-16" />
+          <div className="flex items-center gap-2">
+            <input ref={linkedinFileRef} type="file" accept=".txt,.text" className="hidden" onChange={handleLinkedInImport} />
+            <button type="button" onClick={() => linkedinFileRef.current?.click()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-400 transition-all hover:-translate-y-0.5"
+              style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
+              <FileUp size={14} /> Import LinkedIn
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSave} className="space-y-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
@@ -212,9 +257,36 @@ const AdminAbout = () => {
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Contact */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Resume Language</label>
+              <select
+                className={inputCls}
+                style={inputStyle}
+                value={form.language || 'en'}
+                onChange={e => setForm(f => ({ ...f, language: e.target.value }))}
+                onFocus={focusStyle}
+                onBlur={blurStyle}
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish (Español)</option>
+                <option value="fr">French (Français)</option>
+                <option value="de">German (Deutsch)</option>
+                <option value="pt">Portuguese (Português)</option>
+                <option value="ar">Arabic (العربية)</option>
+                <option value="zh">Chinese (中文)</option>
+                <option value="ja">Japanese (日本語)</option>
+                <option value="ko">Korean (한국어)</option>
+                <option value="hi">Hindi (हिन्दी)</option>
+                <option value="ur">Urdu (اردو)</option>
+                <option value="tr">Turkish (Türkçe)</option>
+                <option value="ru">Russian (Русский)</option>
+                <option value="it">Italian (Italiano)</option>
+                <option value="nl">Dutch (Nederlands)</option>
+              </select>
+              <p className="text-[10px] text-slate-600 mt-1">Sets the language for resume section headings in both PDF and DOCX downloads.</p>
+            </div>
+          </div>
           <div className="glass rounded-2xl p-4 sm:p-6 space-y-4 overflow-hidden">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Contact Info</h3>
             <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">

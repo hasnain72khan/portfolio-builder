@@ -16,6 +16,10 @@ import AdminAbout         from './pages/AdminAbout';
 import AdminExperience    from './pages/AdminExperience';
 import AdminEducation     from './pages/AdminEducation';
 import AdminTestimonials  from './pages/AdminTestimonials';
+import AdminAnalytics     from './pages/AdminAnalytics';
+import AdminCoverLetters  from './pages/AdminCoverLetters';
+import AdminResumeVersions from './pages/AdminResumeVersions';
+import AdminATS            from './pages/AdminATS';
 import PublicPortfolio    from './pages/PublicPortfolio';
 
 function App() {
@@ -45,6 +49,10 @@ function App() {
           <Route path="/admin/experience" element={<ProtectedRoute><AdminExperience /></ProtectedRoute>} />
           <Route path="/admin/education" element={<ProtectedRoute><AdminEducation /></ProtectedRoute>} />
           <Route path="/admin/testimonials" element={<ProtectedRoute><AdminTestimonials /></ProtectedRoute>} />
+          <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
+          <Route path="/admin/cover-letters" element={<ProtectedRoute><AdminCoverLetters /></ProtectedRoute>} />
+          <Route path="/admin/resume-versions" element={<ProtectedRoute><AdminResumeVersions /></ProtectedRoute>} />
+          {/* <Route path="/admin/ats" element={<ProtectedRoute><AdminATS /></ProtectedRoute>} /> */}
         </Routes>
       </Router>
     </AuthProvider>

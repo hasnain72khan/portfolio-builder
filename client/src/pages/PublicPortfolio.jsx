@@ -65,11 +65,14 @@ const PublicPortfolio = () => {
     };
   }, [data]);
 
-  /* Fetch portfolio data */
+  /* Fetch portfolio data + track view */
   useEffect(() => {
+    let cancelled = false;
     axios.get(`${API_BASE}/public/${username}`)
       .then(r => {
+        if (cancelled) return;
         setData(r.data);
+        axios.post(`${API_BASE}/analytics/track/${username}`, { type: 'view' }).catch(() => {});
         const name = r.data.about?.name || r.data.user?.name || username;
         const title = r.data.about?.title || '';
         const bio = r.data.about?.bio || '';
@@ -87,7 +90,8 @@ const PublicPortfolio = () => {
         updateMeta('twitter:description', bio || `Check out ${name}'s portfolio`, 'name');
         if (avatar) updateMeta('twitter:image', avatar, 'name');
       })
-      .catch(() => setNotFound(true));
+      .catch(() => { if (!cancelled) setNotFound(true); });
+    return () => { cancelled = true; };
   }, [username]);
 
   /* Intersection observer for active nav */
@@ -203,7 +207,7 @@ const PublicPortfolio = () => {
       />
       <ResumeModal
         open={showResumeModal} onClose={() => setShowResumeModal(false)}
-        data={{ about, skills, experience, education, services }}
+        data={{ about, skills, experience, education, services, username }}
       />
     </div>
   );

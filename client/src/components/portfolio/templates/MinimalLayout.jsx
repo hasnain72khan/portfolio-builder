@@ -232,7 +232,7 @@ const MinimalLayout = ({ data, displayName, initials, grouped, isDark, setIsDark
 
       <ScrollToTop targetId={null} />
       <ChatWidget ownerName={displayName} ownerEmail={about?.email || ''} ownerPhone={about?.phone || ''} ownerAvatar={about?.avatar || ''} />
-      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={{ about, skills, experience, education, services }} />
+      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={{ about, skills, experience, education, services, username: data.user?.username }} />
     </div>
   );
 };

@@ -1,32 +1,34 @@
 import { jsPDF } from 'jspdf';
 import { getLabels } from './resumeI18n';
-import { makeCircularImage, addCircularAvatar, drawInitialsCircle } from './pdfAvatarHelper';
+import { makeCircularImage, addCircularAvatar } from './pdfAvatarHelper';
 import { addPortfolioQR } from './resumeQR';
 import { registerNotoSans, needsUnicodeFont } from './pdfFontLoader';
 
 const C = {
-  black:   [0, 0, 0],
-  dark:    [34, 34, 34],
-  text:    [68, 68, 68],
-  muted:   [119, 119, 119],
-  link:    [124, 58, 237],
-  line:    [200, 200, 200],
-  white:   [255, 255, 255],
-  sidebar: [38, 40, 48],
-  sideText:[210, 210, 220],
-  sideMuted:[160, 160, 175],
-  accent:  [124, 58, 237],
+  accent:   [168, 85, 247],
+  accentDk: [126, 34, 206],
+  black:    [0, 0, 0],
+  dark:     [30, 30, 30],
+  text:     [55, 65, 81],
+  muted:    [107, 114, 128],
+  link:     [126, 34, 206],
+  line:     [209, 213, 219],
+  white:    [255, 255, 255],
+  sidebarBg:[248, 240, 255],
+  tagBg:    [243, 232, 255],
+  tagBorder:[216, 180, 254],
+  dotBg:    [233, 213, 255],
 };
 
 const PW = 210, PH = 297;
-const SIDE_W = 68;
-const MAIN_L = SIDE_W + 8, MAIN_R = 12;
-const MAIN_W = PW - MAIN_L - MAIN_R;
-const SL = 8, SR = 8;
+const SIDE_W = 54;
+const SL = 8, SR = 6;
 const SW = SIDE_W - SL - SR;
-const MT = 18, MB = 16;
+const MAIN_L = SIDE_W + 10, MAIN_R = 14;
+const MAIN_W = PW - MAIN_L - MAIN_R;
+const MT = 16, MB = 16;
 
-export default async function generateResumeTwoCol({ about, skills, experience, education, services, username }) {
+export default async function generateResumeCreative({ about, skills, experience, education, services, username }) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const labels = getLabels(about?.language);
   const useNoto = needsUnicodeFont(about?.language);
@@ -37,72 +39,65 @@ export default async function generateResumeTwoCol({ about, skills, experience, 
     doc.setFontSize(size);
   };
 
-  // Draw sidebar background on every page
-  const drawSidebarBg = () => {
-    doc.setFillColor(...C.sidebar);
+  const drawSidebar = () => {
+    doc.setFillColor(...C.sidebarBg);
     doc.rect(0, 0, SIDE_W, PH, 'F');
+    // Accent strip on left edge
+    doc.setFillColor(...C.accent);
+    doc.rect(0, 0, 3, PH, 'F');
   };
 
-  drawSidebarBg();
+  drawSidebar();
 
   // ══════════════════════════════════════════════════════════
   //  SIDEBAR
   // ══════════════════════════════════════════════════════════
-  let sy = MT + 5;
+  let sy = MT + 4;
 
-  // Avatar — circular photo or initials
-  const initials = (about?.name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const avatarDiam = 28;
-  const avatarCx = SIDE_W / 2;
-  const avatarCy = sy + avatarDiam / 2;
-
+  // Avatar — circular photo if available
   if (about?.avatar && about.avatar.startsWith('data:image')) {
     try {
+      const avatarDiam = 24;
       const circImg = await makeCircularImage(about.avatar, 400);
-      addCircularAvatar(doc, circImg, avatarCx - avatarDiam / 2, sy, avatarDiam, C.accent, 1.5);
-      sy += avatarDiam + 6;
+      addCircularAvatar(doc, circImg, SL, sy - 2, avatarDiam, C.accentDk, 1);
+      sy += avatarDiam + 4;
     } catch {
-      drawInitialsCircle(doc, initials, avatarCx, avatarCy, 14, C.accent, C.white, 18);
-      sy += 32;
+      // skip if image fails
     }
-  } else {
-    drawInitialsCircle(doc, initials, avatarCx, avatarCy, 14, C.accent, C.white, 18);
-    sy += 32;
   }
 
   // Name
-  setFont('bold', 12);
-  doc.setTextColor(...C.white);
+  setFont('bold', 13);
+  doc.setTextColor(...C.accentDk);
   const nameLines = doc.splitTextToSize(about?.name || '', SW);
   nameLines.forEach(line => {
-    doc.text(line, SIDE_W / 2, sy, { align: 'center' });
-    sy += 5;
+    doc.text(line, SL, sy);
+    sy += 5.5;
   });
   sy += 1;
 
   // Title
   if (about?.title) {
     setFont('normal', 8.5);
-    doc.setTextColor(...C.sideMuted);
+    doc.setTextColor(...C.text);
     const titleLines = doc.splitTextToSize(about.title, SW);
     titleLines.forEach(line => {
-      doc.text(line, SIDE_W / 2, sy, { align: 'center' });
+      doc.text(line, SL, sy);
       sy += 4;
     });
     sy += 4;
   }
 
-  // Divider
   const sideDivider = () => {
-    doc.setDrawColor(70, 72, 82);
-    doc.setLineWidth(0.2);
+    doc.setDrawColor(...C.tagBorder);
+    doc.setLineWidth(0.3);
     doc.line(SL, sy, SIDE_W - SR, sy);
     sy += 6;
   };
 
   const sideSection = (title) => {
-    setFont('bold', 9);
-    doc.setTextColor(...C.accent);
+    setFont('bold', 8.5);
+    doc.setTextColor(...C.accentDk);
     doc.text(title.toUpperCase(), SL, sy);
     sy += 5;
   };
@@ -116,75 +111,78 @@ export default async function generateResumeTwoCol({ about, skills, experience, 
   if (about?.phone) contactItems.push(about.phone);
   if (about?.city && about?.country) contactItems.push(`${about.city}, ${about.country}`);
 
-  setFont('normal', 8);
-  doc.setTextColor(...C.sideText);
+  setFont('normal', 7.5);
+  doc.setTextColor(...C.text);
   contactItems.forEach(item => {
     const lines = doc.splitTextToSize(item, SW);
-    lines.forEach(line => {
-      doc.text(line, SL, sy);
-      sy += 3.8;
-    });
+    lines.forEach(line => { doc.text(line, SL, sy); sy += 3.6; });
     sy += 1.5;
   });
 
-  // Social links
+  // Links
   if (about?.linkedin || about?.github) {
     sy += 2;
     sideSection(labels.links);
-    setFont('normal', 8);
+    setFont('normal', 7.5);
 
     if (about?.linkedin) {
       const url = about.linkedin.startsWith('http') ? about.linkedin : `https://www.linkedin.com/in/${about.linkedin}`;
       const label = `linkedin.com/in/${about.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '')}`;
       doc.setTextColor(...C.link);
-      const linkLines = doc.splitTextToSize(label, SW);
-      linkLines.forEach(line => {
-        doc.textWithLink(line, SL, sy, { url });
-        sy += 3.8;
-      });
+      const ll = doc.splitTextToSize(label, SW);
+      ll.forEach(line => { doc.textWithLink(line, SL, sy, { url }); sy += 3.6; });
       sy += 1.5;
     }
     if (about?.github) {
       const url = about.github.startsWith('http') ? about.github : `https://github.com/${about.github}`;
       const label = `github.com/${about.github.replace(/^https?:\/\/(www\.)?github\.com\//, '')}`;
       doc.setTextColor(...C.link);
-      const linkLines = doc.splitTextToSize(label, SW);
-      linkLines.forEach(line => {
-        doc.textWithLink(line, SL, sy, { url });
-        sy += 3.8;
-      });
+      const ll = doc.splitTextToSize(label, SW);
+      ll.forEach(line => { doc.textWithLink(line, SL, sy, { url }); sy += 3.6; });
       sy += 1.5;
     }
   }
 
-  // Skills in sidebar
+  // Skills as tags
   if (skills?.length) {
     sy += 2;
     sideDivider();
     sideSection(labels.skills);
-    setFont('normal', 8);
-    doc.setTextColor(...C.sideText);
+
+    let tagX = SL;
+    const tagH = 5.5;
+    const tagPad = 2.5;
+    const tagGap = 2;
+    const tagRowGap = 2;
+
+    setFont('normal', 7);
     skills.forEach(s => {
-      if (sy > PH - MB - 5) return;
-      const indent = SL + 3;
-      const skLines = doc.splitTextToSize(s.name, SW - 3);
-      doc.text('•', SL, sy);
-      skLines.forEach((line, li) => {
-        if (sy > PH - MB - 5) return;
-        doc.text(line, indent, sy);
-        sy += 4;
-      });
-      sy += 0.2;
+      const tw = doc.getTextWidth(s.name) + tagPad * 2;
+      if (tagX + tw > SIDE_W - SR) {
+        tagX = SL;
+        sy += tagH + tagRowGap;
+      }
+      if (sy > PH - MB - 8) return;
+
+      // Tag background
+      doc.setFillColor(...C.tagBg);
+      doc.setDrawColor(...C.tagBorder);
+      doc.setLineWidth(0.2);
+      doc.rect(tagX, sy - 3.8, tw, tagH, 'FD');
+
+      doc.setTextColor(...C.accentDk);
+      doc.text(s.name, tagX + tagPad, sy);
+      tagX += tw + tagGap;
     });
+    sy += tagH + 4;
   }
 
-  // Services in sidebar (if space)
-  if (services?.length && sy < PH - MB - 30) {
-    sy += 2;
+  // Services in sidebar
+  if (services?.length && sy < PH - MB - 25) {
     sideDivider();
     sideSection(labels.services);
-    setFont('normal', 8);
-    doc.setTextColor(...C.sideText);
+    setFont('normal', 7.5);
+    doc.setTextColor(...C.text);
     services.forEach(s => {
       if (sy > PH - MB - 5) return;
       const indent = SL + 3;
@@ -193,141 +191,148 @@ export default async function generateResumeTwoCol({ about, skills, experience, 
       stLines.forEach((line, li) => {
         if (sy > PH - MB - 5) return;
         doc.text(line, indent, sy);
-        sy += 4;
+        sy += 3.8;
       });
       sy += 0.5;
     });
   }
 
   // ══════════════════════════════════════════════════════════
-  //  MAIN CONTENT (right side)
+  //  MAIN CONTENT
   // ══════════════════════════════════════════════════════════
   let y = MT;
 
   const checkPage = (need = 14) => {
-    if (y + need > PH - MB) {
-      doc.addPage();
-      drawSidebarBg();
-      y = MT;
-    }
-  };
-
-  const mainDivider = () => {
-    doc.setDrawColor(...C.line);
-    doc.setLineWidth(0.25);
-    doc.line(MAIN_L, y, PW - MAIN_R, y);
-    y += 5;
+    if (y + need > PH - MB) { doc.addPage(); drawSidebar(); y = MT; }
   };
 
   const mainSection = (title) => {
-    checkPage(14);
-    y += 2;
-    setFont('bold', 12);
-    doc.setTextColor(...C.black);
+    checkPage(16);
+    y += 3;
+    setFont('bold', 11.5);
+    doc.setTextColor(...C.accentDk);
     doc.text(title.toUpperCase(), MAIN_L, y);
-    y += 1.5;
-    doc.setDrawColor(...C.black);
-    doc.setLineWidth(0.4);
-    doc.line(MAIN_L, y, PW - MAIN_R, y);
+    y += 2;
+    doc.setDrawColor(...C.accent);
+    doc.setLineWidth(0.5);
+    doc.line(MAIN_L, y, MAIN_L + 22, y);
     y += 6;
+  };
+
+  // Timeline dot helper
+  const timelineDot = (yPos) => {
+    doc.setFillColor(...C.accent);
+    doc.circle(MAIN_L - 4, yPos - 1, 1.5, 'F');
+    doc.setDrawColor(...C.dotBg);
+    doc.setLineWidth(0.3);
+    doc.circle(MAIN_L - 4, yPos - 1, 2.5, 'S');
   };
 
   // Profile
   if (about?.bio) {
     mainSection(labels.summary);
-    setFont('normal', 10);
+    setFont('normal', 9.5);
     doc.setTextColor(...C.text);
     const lines = doc.splitTextToSize(about.bio, MAIN_W);
-    checkPage(lines.length * 4.5 + 4);
+    checkPage(lines.length * 4.3 + 4);
     doc.text(lines, MAIN_L, y);
-    y += lines.length * 4.5 + 4;
+    y += lines.length * 4.3 + 4;
   }
 
-  // Experience
+  // Experience with timeline
   if (experience?.length) {
     mainSection(labels.experience);
+
     experience.forEach((exp, idx) => {
       checkPage(22);
+      timelineDot(y);
 
-      setFont('bold', 10.5);
+      // Timeline line
+      if (idx < experience.length - 1) {
+        doc.setDrawColor(...C.dotBg);
+        doc.setLineWidth(0.4);
+        doc.line(MAIN_L - 4, y + 1, MAIN_L - 4, y + 20);
+      }
+
+      setFont('bold', 10);
       doc.setTextColor(...C.dark);
       doc.text(exp.title, MAIN_L, y);
 
-      setFont('normal', 9);
+      setFont('normal', 8.5);
       doc.setTextColor(...C.muted);
       doc.text(`${exp.startDate} – ${exp.endDate || 'Present'}`, PW - MAIN_R, y, { align: 'right' });
       y += 4.5;
 
-      setFont('italic', 10);
-      doc.setTextColor(...C.text);
-      doc.text(`${exp.company}${exp.location ? ', ' + exp.location : ''}`, MAIN_L, y);
+      setFont('italic', 9);
+      doc.setTextColor(...C.accent);
+      doc.text(`${exp.company}${exp.location ? '  •  ' + exp.location : ''}`, MAIN_L, y);
       y += 5;
 
       if (exp.description) {
-        setFont('normal', 10);
+        setFont('normal', 9);
         doc.setTextColor(...C.text);
         const dl = doc.splitTextToSize(exp.description, MAIN_W - 4);
-        checkPage(dl.length * 4.3 + 4);
+        checkPage(dl.length * 4 + 4);
         dl.forEach((line, li) => {
           checkPage(5);
-          if (li === 0) {
-            doc.text('•', MAIN_L, y);
-            doc.text(line, MAIN_L + 4, y);
-          } else {
-            doc.text(line, MAIN_L + 4, y);
-          }
-          y += 4.3;
+          if (li === 0) { doc.text('–', MAIN_L, y); doc.text(line, MAIN_L + 4, y); }
+          else { doc.text(line, MAIN_L + 4, y); }
+          y += 4;
         });
       }
-      y += idx < experience.length - 1 ? 4 : 2;
+      y += idx < experience.length - 1 ? 5 : 2;
     });
   }
 
-  // Education
+  // Education with timeline
   if (education?.length) {
     mainSection(labels.education);
+
     education.forEach((edu, idx) => {
       checkPage(18);
+      timelineDot(y);
 
-      setFont('bold', 10.5);
+      if (idx < education.length - 1) {
+        doc.setDrawColor(...C.dotBg);
+        doc.setLineWidth(0.4);
+        doc.line(MAIN_L - 4, y + 1, MAIN_L - 4, y + 16);
+      }
+
+      setFont('bold', 10);
       doc.setTextColor(...C.dark);
       doc.text(edu.degree, MAIN_L, y);
 
-      setFont('normal', 9);
+      setFont('normal', 8.5);
       doc.setTextColor(...C.muted);
       doc.text(`${edu.startDate} – ${edu.endDate || 'Present'}`, PW - MAIN_R, y, { align: 'right' });
       y += 4.5;
 
-      setFont('italic', 10);
-      doc.setTextColor(...C.text);
+      setFont('italic', 9);
+      doc.setTextColor(...C.accent);
       doc.text(edu.institution, MAIN_L, y);
       y += 5;
 
       if (edu.description) {
-        setFont('normal', 10);
+        setFont('normal', 9);
         doc.setTextColor(...C.text);
         const dl = doc.splitTextToSize(edu.description, MAIN_W - 4);
-        checkPage(dl.length * 4.3 + 4);
+        checkPage(dl.length * 4 + 4);
         dl.forEach((line, li) => {
           checkPage(5);
-          if (li === 0) {
-            doc.text('•', MAIN_L, y);
-            doc.text(line, MAIN_L + 4, y);
-          } else {
-            doc.text(line, MAIN_L + 4, y);
-          }
-          y += 4.3;
+          if (li === 0) { doc.text('–', MAIN_L, y); doc.text(line, MAIN_L + 4, y); }
+          else { doc.text(line, MAIN_L + 4, y); }
+          y += 4;
         });
       }
-      y += idx < education.length - 1 ? 4 : 2;
+      y += idx < education.length - 1 ? 5 : 2;
     });
   }
 
-  // Footer on every page
+  // Footer
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    setFont('normal', 8);
+    setFont('normal', 7.5);
     doc.setTextColor(...C.muted);
     doc.text(`Page ${i} of ${pageCount}`, PW - MAIN_R, PH - 8, { align: 'right' });
   }

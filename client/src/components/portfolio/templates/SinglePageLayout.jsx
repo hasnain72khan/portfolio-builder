@@ -106,7 +106,7 @@ const SinglePageLayout = ({ data, displayName, initials, grouped, isDark, setIsD
 
       <ChatWidget ownerName={displayName} ownerEmail={about?.email || ''} ownerPhone={about?.phone || ''} ownerAvatar={about?.avatar || ''} />
       <ScrollToTop targetId={null} />
-      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={{ about, skills, experience, education, services }} />
+      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={{ about, skills, experience, education, services, username: data.user?.username }} />
     </div>
   );
 };

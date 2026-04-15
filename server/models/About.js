@@ -21,6 +21,7 @@ const AboutSchema = new mongoose.Schema({
   openToWork:   { type: Boolean, default: true },
   accentColor:  { type: String, default: '#7c3aed' },
   template:     { type: String, default: 'sidebar', enum: ['sidebar', 'single-page', 'minimal'] },
+  language:     { type: String, default: 'en' },
 });
 
 module.exports = mongoose.model('About', AboutSchema);
