@@ -12,4 +12,6 @@ const ProjectSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }
 });
 
+ProjectSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Project', ProjectSchema);

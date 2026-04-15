@@ -7,4 +7,6 @@ const SkillSchema = new mongoose.Schema({
   level: { type: String, enum: ['Beginner', 'Intermediate', 'Expert'], default: 'Intermediate' }
 });
 
+SkillSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Skill', SkillSchema);

@@ -7,9 +7,10 @@ import ScrollReveal from '../../ScrollReveal';
 import { SurfaceCard, LinkedInIcon, GitHubIcon, ScrollToTop } from '../../portfolio';
 import { categoryColor, levelDot } from '../utils';
 
-const MinimalLayout = ({ data, displayName, initials, grouped, isDark, setIsDark }) => {
+const MinimalLayout = ({ data, translatedResumeData, isTranslating, displayName, initials, grouped, isDark, setIsDark }) => {
   const { about, projects, skills, services, experience, education, testimonials } = data;
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const resumeData = translatedResumeData || { about, skills, experience, education, services, username: data.user?.username };
 
   const SectionTitle = ({ children }) => (
     <h2 className="text-lg font-bold mb-6 pb-2" style={{ color: 'var(--color-heading)', borderBottom: '2px solid rgba(var(--brand-rgb), 0.2)' }}>{children}</h2>
@@ -232,7 +233,7 @@ const MinimalLayout = ({ data, displayName, initials, grouped, isDark, setIsDark
 
       <ScrollToTop targetId={null} />
       <ChatWidget ownerName={displayName} ownerEmail={about?.email || ''} ownerPhone={about?.phone || ''} ownerAvatar={about?.avatar || ''} />
-      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={{ about, skills, experience, education, services, username: data.user?.username }} />
+      <ResumeModal open={showResumeModal} onClose={() => setShowResumeModal(false)} data={resumeData} isTranslating={isTranslating} />
     </div>
   );
 };

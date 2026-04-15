@@ -6,57 +6,38 @@ router.post('/', async (req, res) => {
     const { data, targetLang: rawLang } = req.body;
     if (!data || !rawLang || rawLang === 'en') return res.json(data);
 
-    // Map language codes that need special handling
     const langMap = { zh: 'zh-CN' };
     const targetLang = langMap[rawLang] || rawLang;
-
     const out = JSON.parse(JSON.stringify(data));
 
-    const t = async (text) => {
-      if (!text || text.trim().length === 0) return text;
-      try {
-        const r = await translate(text, { to: targetLang, forceBatch: false });
-        return r.text;
-      } catch (e) {
-        console.warn('Translate failed:', e.message?.slice(0, 80));
-        return text;
-      }
+    // Collect all texts to translate with their paths
+    const jobs = [];
+    const addJob = (obj, key) => {
+      if (obj?.[key] && obj[key].trim().length > 0) jobs.push({ obj, key, text: obj[key] });
     };
 
-    // Translate about
-    if (out.about) {
-      if (out.about.title) out.about.title = await t(out.about.title);
-      if (out.about.bio) out.about.bio = await t(out.about.bio);
-    }
+    if (out.about) { addJob(out.about, 'title'); addJob(out.about, 'bio'); }
+    if (out.experience?.length) for (const e of out.experience) { addJob(e, 'title'); addJob(e, 'description'); }
+    if (out.education?.length) for (const e of out.education) { addJob(e, 'degree'); addJob(e, 'description'); }
+    if (out.services?.length) for (const s of out.services) { addJob(s, 'title'); addJob(s, 'description'); }
 
-    // Translate experience
-    if (out.experience?.length) {
-      for (const e of out.experience) {
-        if (e.title) e.title = await t(e.title);
-        if (e.description) e.description = await t(e.description);
+    if (jobs.length === 0) return res.json(out);
+
+    // Run ALL translations in parallel
+    const results = await Promise.allSettled(
+      jobs.map(j => translate(j.text, { to: targetLang, forceBatch: false }))
+    );
+
+    // Apply results
+    results.forEach((r, i) => {
+      if (r.status === 'fulfilled' && r.value?.text) {
+        jobs[i].obj[jobs[i].key] = r.value.text;
       }
-    }
+    });
 
-    // Translate education
-    if (out.education?.length) {
-      for (const e of out.education) {
-        if (e.degree) e.degree = await t(e.degree);
-        if (e.description) e.description = await t(e.description);
-      }
-    }
-
-    // Translate services
-    if (out.services?.length) {
-      for (const s of out.services) {
-        if (s.title) s.title = await t(s.title);
-        if (s.description) s.description = await t(s.description);
-      }
-    }
-
-    console.log(`Translated ${targetLang}: about=${!!out.about?.title}, exp=${out.experience?.length || 0}, edu=${out.education?.length || 0}, svc=${out.services?.length || 0}`);
     res.json(out);
   } catch (err) {
-    console.error('Translate route error:', err.message);
+    console.error('Translate error:', err.message);
     res.json(req.body.data);
   }
 });

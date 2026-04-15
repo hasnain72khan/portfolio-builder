@@ -24,6 +24,8 @@ const PublicPortfolio = () => {
   const [mobileNavClosing, setMobileNavClosing] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const [translatedResumeData, setTranslatedResumeData] = useState(null);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('portfolio-theme');
     return saved ? saved === 'dark' : true;
@@ -73,6 +75,23 @@ const PublicPortfolio = () => {
         if (cancelled) return;
         setData(r.data);
         axios.post(`${API_BASE}/analytics/track/${username}`, { type: 'view' }).catch(() => {});
+
+        // Pre-translate resume data if non-English language selected
+        const lang = r.data.about?.language;
+        if (lang && lang !== 'en') {
+          setIsTranslating(true);
+          axios.post(`${API_BASE}/translate`, { data: r.data, targetLang: lang })
+            .then(tr => {
+              if (cancelled) return;
+              const translated = tr.data;
+              translated.username = username;
+              if (translated.about) translated.about.language = lang;
+              setTranslatedResumeData(translated);
+            })
+            .catch(() => {})
+            .finally(() => { if (!cancelled) setIsTranslating(false); });
+        }
+
         const name = r.data.about?.name || r.data.user?.name || username;
         const title = r.data.about?.title || '';
         const bio = r.data.about?.bio || '';
@@ -141,10 +160,10 @@ const PublicPortfolio = () => {
 
   // Render alternative templates
   if (template === 'single-page') {
-    return <SinglePageLayout data={data} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
+    return <SinglePageLayout data={data} translatedResumeData={translatedResumeData} isTranslating={isTranslating} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
   }
   if (template === 'minimal') {
-    return <MinimalLayout data={data} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
+    return <MinimalLayout data={data} translatedResumeData={translatedResumeData} isTranslating={isTranslating} displayName={displayName} initials={initials} grouped={grouped} isDark={isDark} setIsDark={setIsDark} />;
   }
 
   // Default: sidebar layout
@@ -207,7 +226,8 @@ const PublicPortfolio = () => {
       />
       <ResumeModal
         open={showResumeModal} onClose={() => setShowResumeModal(false)}
-        data={{ about, skills, experience, education, services, username }}
+        data={translatedResumeData || { about, skills, experience, education, services, username }}
+        isTranslating={isTranslating}
       />
     </div>
   );

@@ -12,4 +12,6 @@ const TestimonialSchema = new mongoose.Schema({
   order:     { type: Number, default: 0 },
 });
 
+TestimonialSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Testimonial', TestimonialSchema);

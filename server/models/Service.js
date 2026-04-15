@@ -8,4 +8,6 @@ const ServiceSchema = new mongoose.Schema({
   order:       { type: Number, default: 0 },
 });
 
+ServiceSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Service', ServiceSchema);

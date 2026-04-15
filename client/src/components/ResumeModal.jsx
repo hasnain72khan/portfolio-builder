@@ -32,17 +32,8 @@ const LANGUAGES = [
 ];
 
 async function translateData(data, lang) {
-  if (!lang || lang === 'en') return data;
-  try {
-    const res = await axios.post(`${API}/translate`, { data, targetLang: lang });
-    // Preserve username and set language on about
-    const translated = res.data;
-    translated.username = data.username;
-    if (translated.about) translated.about.language = lang;
-    return translated;
-  } catch {
-    return data;
-  }
+  // Translation now happens in PublicPortfolio on page load — this is a no-op fallback
+  return data;
 }
 
 const previews = {
@@ -134,21 +125,18 @@ const templates = [
   { key: 'minimal', name: 'Minimal', generate: generateResumeMinimal },
 ];
 
-const ResumeModal = ({ open, onClose, data }) => {
+const ResumeModal = ({ open, onClose, data, isTranslating }) => {
   const [format, setFormat] = useState('pdf');
   const [loading, setLoading] = useState(null);
-  const [translatedCache, setTranslatedCache] = useState(null);
+  const busy = !!loading || isTranslating;
 
   const lang = data?.about?.language || 'en';
-
   const forceDOCX = needsDOCX(lang);
   const effectiveFormat = forceDOCX ? 'docx' : format;
 
-  // Pre-translate + pre-cache when modal opens
+  // Pre-cache fonts/QR when modal opens
   useEffect(() => {
     if (!open || !data) return;
-    setTranslatedCache(null);
-    if (lang !== 'en') translateData(data, lang).then(setTranslatedCache).catch(() => {});
     if (lang === 'tr') {
       fetch('/NotoSans-Regular.ttf').catch(() => {});
       fetch('/NotoSans-Bold.ttf').catch(() => {});
@@ -169,11 +157,11 @@ const ResumeModal = ({ open, onClose, data }) => {
     }
 
     try {
-      const finalData = lang === 'en' ? data : (translatedCache || await translateData(data, lang));
+      // Data is already translated (done on page load)
       if (effectiveFormat === 'docx') {
-        await generateResumeDOCX(finalData);
+        await generateResumeDOCX(data);
       } else {
-        const result = await template.generate(finalData);
+        const result = await template.generate(data);
         if (result?.doc) {
           if (action === 'preview' && previewWin) {
             previewWin.location.href = URL.createObjectURL(result.doc.output('blob'));
@@ -242,6 +230,15 @@ const ResumeModal = ({ open, onClose, data }) => {
           )}
         </div>
 
+        {/* Translating indicator */}
+        {isTranslating && (
+          <div className="mx-5 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+            style={{ background: 'rgba(var(--brand-rgb), 0.08)', border: '1px solid rgba(var(--brand-rgb), 0.15)', color: 'var(--color-brand)' }}>
+            <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin flex-shrink-0" />
+            Translating resume to {LANGUAGES.find(l => l.code === lang)?.label || lang}...
+          </div>
+        )}
+
         {/* Templates or DOCX download */}
         {effectiveFormat === 'pdf' ? (
           <div className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[55vh] overflow-y-auto">
@@ -255,14 +252,14 @@ const ResumeModal = ({ open, onClose, data }) => {
                 </div>
                 <p className="text-xs font-semibold" style={{ color: 'var(--color-heading)' }}>{t.name}</p>
                 <div className="flex items-center gap-2 w-full">
-                  <button onClick={() => handleAction(t, 'preview')} disabled={!!loading}
+                  <button onClick={() => handleAction(t, 'preview')} disabled={busy}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-medium transition-all disabled:opacity-40"
                     style={{ background: 'var(--glass-bg)', color: 'var(--color-text-muted)', border: '1px solid var(--glass-border)' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--brand-rgb), 0.3)'; e.currentTarget.style.color = 'var(--color-brand)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--glass-border)'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}>
                     {loading === t.key + '-preview' ? <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin" /> : <><Eye size={12} /> Preview</>}
                   </button>
-                  <button onClick={() => handleAction(t, 'download')} disabled={!!loading}
+                  <button onClick={() => handleAction(t, 'download')} disabled={busy}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-medium text-white transition-all disabled:opacity-40"
                     style={{ background: 'var(--color-brand)' }}
                     onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
@@ -275,7 +272,7 @@ const ResumeModal = ({ open, onClose, data }) => {
           </div>
         ) : (
           <div className="p-5">
-            <button onClick={() => handleAction(null, 'download')} disabled={!!loading}
+            <button onClick={() => handleAction(null, 'download')} disabled={busy}
               className="w-full flex items-center gap-4 p-5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50"
               style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
               onMouseEnter={e => { if (!loading) e.currentTarget.style.borderColor = 'rgba(var(--brand-rgb), 0.4)'; }}

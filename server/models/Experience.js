@@ -11,4 +11,6 @@ const ExperienceSchema = new mongoose.Schema({
   order:       { type: Number, default: 0 },
 });
 
+ExperienceSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Experience', ExperienceSchema);

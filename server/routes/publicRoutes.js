@@ -9,20 +9,21 @@ const Experience  = require('../models/Experience');
 const Education   = require('../models/Education');
 const Testimonial = require('../models/Testimonial');
 
-// GET /api/public/:username — returns full portfolio data for a user
+// GET /api/public/:username — returns full portfolio data (optimized with lean + parallel)
 router.get('/:username', async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username }).select('-password');
+    const user = await User.findOne({ username: req.params.username }).select('-password').lean();
     if (!user) return res.status(404).json({ message: 'Portfolio not found' });
 
+    const uid = user._id;
     const [about, projects, skills, services, experience, education, testimonials] = await Promise.all([
-      About.findOne({ userId: user._id }),
-      Project.find({ userId: user._id }),
-      Skill.find({ userId: user._id }),
-      Service.find({ userId: user._id }).sort({ order: 1 }),
-      Experience.find({ userId: user._id }).sort({ order: 1 }),
-      Education.find({ userId: user._id }).sort({ order: 1 }),
-      Testimonial.find({ userId: user._id }).sort({ order: 1 }),
+      About.findOne({ userId: uid }).lean(),
+      Project.find({ userId: uid }).lean(),
+      Skill.find({ userId: uid }).lean(),
+      Service.find({ userId: uid }).sort({ order: 1 }).lean(),
+      Experience.find({ userId: uid }).sort({ order: 1 }).lean(),
+      Education.find({ userId: uid }).sort({ order: 1 }).lean(),
+      Testimonial.find({ userId: uid }).sort({ order: 1 }).lean(),
     ]);
 
     res.json({ user, about: about || {}, projects, skills, services, experience, education, testimonials });
