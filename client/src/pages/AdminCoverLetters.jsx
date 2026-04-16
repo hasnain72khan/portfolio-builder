@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Pencil, Trash2, FileText, Download, X } from 'lucide-react';
 import api from '../api';
 import Toast from '../components/Toast';
+import Spinner from '../components/Spinner';
 import Pagination from '../components/Pagination';
 import { jsPDF } from 'jspdf';
 
@@ -15,6 +16,7 @@ const AdminCoverLetters = () => {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -35,11 +37,13 @@ const AdminCoverLetters = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editId) { await api.put(`/cover-letters/${editId}`, form); showToast('Cover letter updated'); }
       else { await api.post('/cover-letters', form); showToast('Cover letter created'); }
       setModal(false); fetchData(page);
     } catch { showToast('Failed to save', 'error'); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
@@ -161,8 +165,8 @@ const AdminCoverLetters = () => {
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Content</label>
                 <textarea rows={10} placeholder="Write your cover letter content here..." className={inputCls} style={inputStyle} value={form.content} onChange={set('content')} />
               </div>
-              <button type="submit" className="w-full py-2.5 rounded-xl font-bold text-white" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
-                {editId ? 'Update Cover Letter' : 'Save Cover Letter'}
+              <button type="submit" disabled={saving} className="w-full py-2.5 rounded-xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                {saving ? <Spinner size={18} color="#fff" /> : editId ? 'Update Cover Letter' : 'Save Cover Letter'}
               </button>
             </form>
           </div>

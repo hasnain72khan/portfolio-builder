@@ -11,6 +11,7 @@ const AdminExperience = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ title: '', company: '', location: '', startDate: '', endDate: '', description: '', order: 0 });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -41,6 +42,7 @@ const AdminExperience = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editItem) {
         await api.put(`/experience/${editItem._id}`, form);
@@ -52,7 +54,7 @@ const AdminExperience = () => {
       closeModal();
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
-    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); }
+    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); } finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -87,7 +89,7 @@ const AdminExperience = () => {
 
       <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onPageChange={handlePageChange} />
 
-      <Modal open={showModal} title={editItem ? 'Edit Experience' : 'Add Experience'} submitLabel={editItem ? 'Update Experience' : 'Save Experience'} onClose={closeModal} onSubmit={handleSubmit}>
+      <Modal open={showModal} title={editItem ? 'Edit Experience' : 'Add Experience'} submitLabel={editItem ? 'Update Experience' : 'Save Experience'} onClose={closeModal} onSubmit={handleSubmit} saving={saving}>
         <FormField label="Job Title / Role" required placeholder="e.g. Senior Developer, Marketing Manager, Graphic Designer" value={form.title} onChange={set('title')} />
         <FormField label="Company / Organization" required placeholder="e.g. Google, Freelance, Self-Employed" value={form.company} onChange={set('company')} />
         <FormField label="Location" placeholder="e.g. Remote, New York, London" value={form.location} onChange={set('location')} />

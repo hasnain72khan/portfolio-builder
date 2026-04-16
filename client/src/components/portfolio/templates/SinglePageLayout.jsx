@@ -69,11 +69,11 @@ const SinglePageLayout = ({ data, translatedResumeData, isTranslating, displayNa
             </div>
           )}
 
-          <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
             <button onClick={() => setShowResumeModal(true)}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
               style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
-              <Download size={15} /> Download Resume
+              <Download size={14} /> Resume
             </button>
             <button onClick={() => setIsDark(d => !d)}
               className="p-2.5 rounded-xl" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
@@ -83,7 +83,7 @@ const SinglePageLayout = ({ data, translatedResumeData, isTranslating, displayNa
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-10">
+          <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto mt-10">
             <StatCard value={about?.yearsExp || '—'} label="Years Exp." />
             <StatCard value={about?.projectCount || '—'} label="Projects" />
             <StatCard value={about?.techCount || '—'} label="Technologies" />

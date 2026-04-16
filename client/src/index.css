@@ -55,6 +55,10 @@ input, textarea, select, button {
   max-width: 100%;
 }
 
+button, a, [role="button"] {
+  cursor: pointer;
+}
+
 #root {
   min-height: 100svh;
   overflow: hidden;

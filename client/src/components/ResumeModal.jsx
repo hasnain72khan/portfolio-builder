@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, FileDown, Download, Eye, AlertCircle } from 'lucide-react';
-import axios from 'axios';
 import generateResumePDF from '../utils/generateResumePDF';
 import generateResumeTwoCol from '../utils/generateResumeTwoCol';
 import generateResumeModern from '../utils/generateResumeModern';
@@ -14,106 +13,12 @@ import { needsDOCX } from '../utils/pdfFontLoader';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Spanish' },
-  { code: 'fr', label: 'French' },
-  { code: 'de', label: 'German' },
-  { code: 'pt', label: 'Portuguese' },
-  { code: 'ar', label: 'Arabic' },
-  { code: 'zh', label: 'Chinese' },
-  { code: 'ja', label: 'Japanese' },
-  { code: 'ko', label: 'Korean' },
-  { code: 'hi', label: 'Hindi' },
-  { code: 'ur', label: 'Urdu' },
-  { code: 'tr', label: 'Turkish' },
-  { code: 'ru', label: 'Russian' },
-  { code: 'it', label: 'Italian' },
-  { code: 'nl', label: 'Dutch' },
+  { code: 'en', label: 'English' }, { code: 'es', label: 'Spanish' }, { code: 'fr', label: 'French' },
+  { code: 'de', label: 'German' }, { code: 'pt', label: 'Portuguese' }, { code: 'ar', label: 'Arabic' },
+  { code: 'zh', label: 'Chinese' }, { code: 'ja', label: 'Japanese' }, { code: 'ko', label: 'Korean' },
+  { code: 'hi', label: 'Hindi' }, { code: 'ur', label: 'Urdu' }, { code: 'tr', label: 'Turkish' },
+  { code: 'ru', label: 'Russian' }, { code: 'it', label: 'Italian' }, { code: 'nl', label: 'Dutch' },
 ];
-
-async function translateData(data, lang) {
-  // Translation now happens in PublicPortfolio on page load — this is a no-op fallback
-  return data;
-}
-
-const previews = {
-  classic: (
-    <div className="w-full h-full bg-white rounded-sm p-1.5 flex flex-col items-center">
-      <div className="w-10 h-1 bg-gray-800 rounded-full mb-0.5" />
-      <div className="w-7 h-0.5 bg-gray-300 rounded-full mb-1" />
-      <div className="w-full h-px bg-gray-300 mb-1" />
-      <div className="w-full space-y-0.5">{[1,2,3].map(i=><div key={i} className="flex gap-1"><div className="w-1 h-0.5 bg-gray-400 rounded-full mt-0.5 flex-shrink-0"/><div className="flex-1 h-0.5 bg-gray-200 rounded-full"/></div>)}</div>
-    </div>
-  ),
-  twocol: (
-    <div className="w-full h-full rounded-sm flex overflow-hidden">
-      <div className="w-[35%] h-full bg-gray-800 p-1 flex flex-col items-center">
-        <div className="w-3 h-3 rounded-full bg-violet-500 mb-0.5" />
-        <div className="w-5 h-0.5 bg-gray-500 rounded-full mb-0.5" />
-        <div className="w-4 h-0.5 bg-gray-600 rounded-full" />
-      </div>
-      <div className="flex-1 bg-white p-1 space-y-0.5">
-        <div className="w-8 h-0.5 bg-gray-800 rounded-full" />
-        <div className="w-full h-px bg-gray-200" />
-        <div className="w-full h-0.5 bg-gray-200 rounded-full" />
-      </div>
-    </div>
-  ),
-  modern: (
-    <div className="w-full h-full bg-white rounded-sm flex flex-col overflow-hidden">
-      <div className="w-full h-4 bg-blue-600 p-0.5 pl-1">
-        <div className="w-6 h-0.5 bg-white/80 rounded-full mb-0.5" />
-        <div className="w-4 h-0.5 bg-blue-200 rounded-full" />
-      </div>
-      <div className="p-1 space-y-0.5 flex-1">
-        <div className="w-5 h-0.5 bg-blue-600 rounded-full" />
-        <div className="w-full h-0.5 bg-gray-200 rounded-full" />
-      </div>
-    </div>
-  ),
-  creative: (
-    <div className="w-full h-full rounded-sm flex overflow-hidden">
-      <div className="w-[30%] h-full bg-purple-50 border-l-2 border-purple-500 p-1 flex flex-col">
-        <div className="w-4 h-0.5 bg-purple-700 rounded-full mb-0.5" />
-        <div className="w-3 h-0.5 bg-purple-300 rounded-full mb-1" />
-        <div className="flex flex-wrap gap-0.5">{[1,2,3].map(i=><div key={i} className="w-2 h-1 bg-purple-100 border border-purple-200 rounded-sm"/>)}</div>
-      </div>
-      <div className="flex-1 bg-white p-1 space-y-0.5">
-        <div className="w-6 h-0.5 bg-purple-700 rounded-full" />
-        <div className="w-full h-0.5 bg-gray-200 rounded-full" />
-      </div>
-    </div>
-  ),
-  executive: (
-    <div className="w-full h-full bg-white rounded-sm p-1.5 flex flex-col items-center">
-      <div className="w-full h-px bg-gray-400 mb-0.5" />
-      <div className="w-8 h-1 bg-gray-900 rounded-full mb-0.5" />
-      <div className="w-5 h-0.5 bg-gray-400 rounded-full mb-0.5" />
-      <div className="w-full h-px bg-gray-400 mb-1" />
-      <div className="w-full h-0.5 bg-gray-200 rounded-full" />
-    </div>
-  ),
-  tech: (
-    <div className="w-full h-full bg-white rounded-sm flex flex-col overflow-hidden">
-      <div className="w-full h-0.5 bg-gray-900" />
-      <div className="w-full h-px bg-green-500" />
-      <div className="p-1 space-y-0.5 flex-1">
-        <div className="w-7 h-0.5 bg-gray-900 rounded-full" />
-        <div className="w-5 h-0.5 bg-green-600 rounded-full" />
-        <div className="flex gap-0.5 mt-0.5">{[1,2,3,4,5].map(i=><div key={i} className={`w-1 h-1 rounded-full ${i<=3?'bg-green-500':'bg-gray-200'}`}/>)}</div>
-      </div>
-    </div>
-  ),
-  minimal: (
-    <div className="w-full h-full bg-white rounded-sm p-2 flex flex-col">
-      <div className="w-8 h-1.5 bg-gray-900 rounded-full mb-1" />
-      <div className="w-5 h-0.5 bg-gray-300 rounded-full mb-1.5" />
-      <div className="w-full h-px bg-gray-200 mb-1.5" />
-      <div className="w-3 h-0.5 bg-gray-400 rounded-full mb-0.5" />
-      <div className="w-full h-0.5 bg-gray-200 rounded-full" />
-    </div>
-  ),
-};
 
 const templates = [
   { key: 'classic', name: 'Classic', generate: generateResumePDF },
@@ -125,24 +30,61 @@ const templates = [
   { key: 'minimal', name: 'Minimal', generate: generateResumeMinimal },
 ];
 
+// Generate a thumbnail image from a jsPDF doc
+function docToThumbnail(doc) {
+  try {
+    const pageData = doc.output('arraybuffer');
+    // Use jsPDF's internal canvas to render page 1 as image
+    const dataUri = doc.output('datauristring');
+    // Extract first page as image via canvas
+    return dataUri; // We'll use this for iframe preview
+  } catch { return null; }
+}
+
 const ResumeModal = ({ open, onClose, data, isTranslating }) => {
   const [format, setFormat] = useState('pdf');
   const [loading, setLoading] = useState(null);
+  const [thumbnails, setThumbnails] = useState({});
+  const [thumbsLoading, setThumbsLoading] = useState(false);
   const busy = !!loading || isTranslating;
+  const generated = useRef(false);
 
   const lang = data?.about?.language || 'en';
   const forceDOCX = needsDOCX(lang);
   const effectiveFormat = forceDOCX ? 'docx' : format;
 
-  // Pre-cache fonts/QR when modal opens
+  // Generate real PDF thumbnails when modal opens
   useEffect(() => {
-    if (!open || !data) return;
-    if (lang === 'tr') {
-      fetch('/NotoSans-Regular.ttf').catch(() => {});
-      fetch('/NotoSans-Bold.ttf').catch(() => {});
-    }
-    if (data.username) fetch(`${API}/qr?text=${encodeURIComponent(window.location.origin + '/portfolio/' + data.username)}`).catch(() => {});
-  }, [open]);
+    if (!open || !data || forceDOCX || generated.current) return;
+    generated.current = true;
+    setThumbsLoading(true);
+
+    const genThumbs = async () => {
+      const thumbs = {};
+      for (const t of templates) {
+        try {
+          const result = await t.generate(data);
+          if (result?.doc) {
+            // Convert first page to blob URL for iframe thumbnail
+            const blob = result.doc.output('blob');
+            thumbs[t.key] = URL.createObjectURL(blob);
+          }
+        } catch { /* skip failed template */ }
+      }
+      setThumbnails(thumbs);
+      setThumbsLoading(false);
+    };
+    genThumbs();
+
+    return () => { generated.current = false; };
+  }, [open, data]);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(thumbnails).forEach(url => { try { URL.revokeObjectURL(url); } catch {} });
+    };
+  }, [thumbnails]);
 
   if (!open) return null;
 
@@ -157,7 +99,6 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
     }
 
     try {
-      // Data is already translated (done on page load)
       if (effectiveFormat === 'docx') {
         await generateResumeDOCX(data);
       } else {
@@ -175,7 +116,16 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
       if (previewWin) previewWin.document.write('<p style="color:red">Failed. Try again.</p>');
     }
     setLoading(null);
-    if (action === 'download') onClose();
+    if (action === 'download') {
+      // Track resume download
+      if (data.username) {
+        fetch(`${API}/analytics/track/${data.username}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'resume_download', section: effectiveFormat }),
+        }).catch(() => {});
+      }
+      onClose();
+    }
   };
 
   return (
@@ -186,7 +136,6 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
         <div className="flex justify-between items-center px-5 py-4"
           style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div>
@@ -201,17 +150,13 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
           </button>
         </div>
 
-        {/* Controls row */}
         <div className="px-5 pt-4 flex flex-wrap items-center gap-4">
           {!forceDOCX ? (
             <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--glass-border)' }}>
               {[{ id: 'pdf', label: 'PDF' }, { id: 'docx', label: 'DOCX' }].map(f => (
                 <button key={f.id} onClick={() => setFormat(f.id)}
                   className="px-5 py-1.5 text-xs font-semibold transition-all"
-                  style={{
-                    background: format === f.id ? 'rgba(var(--brand-rgb), 0.2)' : 'transparent',
-                    color: format === f.id ? 'var(--color-brand)' : 'var(--color-text-muted)',
-                  }}>
+                  style={{ background: format === f.id ? 'rgba(var(--brand-rgb), 0.2)' : 'transparent', color: format === f.id ? 'var(--color-brand)' : 'var(--color-text-muted)' }}>
                   {f.label}
                 </button>
               ))}
@@ -220,35 +165,46 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
               style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#93c5fd' }}>
               <AlertCircle size={14} />
-              <span>{LANGUAGES.find(l => l.code === lang)?.label} uses DOCX format — Word handles all scripts perfectly</span>
+              <span>{LANGUAGES.find(l => l.code === lang)?.label} uses DOCX format</span>
             </div>
           )}
           {lang !== 'en' && !forceDOCX && (
             <span className="text-[10px]" style={{ color: 'var(--color-brand)' }}>
-              Auto-translating to {LANGUAGES.find(l => l.code === lang)?.label || lang}
+              Translated to {LANGUAGES.find(l => l.code === lang)?.label || lang}
             </span>
           )}
         </div>
 
-        {/* Translating indicator */}
         {isTranslating && (
           <div className="mx-5 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
             style={{ background: 'rgba(var(--brand-rgb), 0.08)', border: '1px solid rgba(var(--brand-rgb), 0.15)', color: 'var(--color-brand)' }}>
             <div className="w-3 h-3 rounded-full border-2 border-current border-t-transparent animate-spin flex-shrink-0" />
-            Translating resume to {LANGUAGES.find(l => l.code === lang)?.label || lang}...
+            Translating resume...
           </div>
         )}
 
-        {/* Templates or DOCX download */}
         {effectiveFormat === 'pdf' ? (
           <div className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[55vh] overflow-y-auto">
             {templates.map(t => (
-              <div key={t.key}
-                className="flex flex-col items-center gap-2.5 p-4 rounded-xl"
+              <div key={t.key} className="flex flex-col items-center gap-2.5 p-3 rounded-xl"
                 style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
-                <div className="w-full aspect-[3/4] rounded-md overflow-hidden shadow-sm"
+                {/* Real PDF thumbnail or loading skeleton */}
+                <div className="w-full aspect-[3/4] rounded-md overflow-hidden bg-white relative"
                   style={{ border: '1px solid var(--glass-border)' }}>
-                  {previews[t.key]}
+                  {thumbnails[t.key] ? (
+                    <iframe src={thumbnails[t.key] + '#toolbar=0&navpanes=0&scrollbar=0'}
+                      className="w-full h-full border-0 pointer-events-none"
+                      style={{ transform: 'scale(1)', transformOrigin: 'top left' }}
+                      title={t.name} />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      {thumbsLoading ? (
+                        <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--glass-border)', borderTopColor: 'transparent' }} />
+                      ) : (
+                        <span className="text-[9px] text-gray-400">Preview</span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs font-semibold" style={{ color: 'var(--color-heading)' }}>{t.name}</p>
                 <div className="flex items-center gap-2 w-full">
@@ -274,9 +230,7 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
           <div className="p-5">
             <button onClick={() => handleAction(null, 'download')} disabled={busy}
               className="w-full flex items-center gap-4 p-5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50"
-              style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
-              onMouseEnter={e => { if (!loading) e.currentTarget.style.borderColor = 'rgba(var(--brand-rgb), 0.4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--glass-border)'; }}>
+              style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
               <div className="w-14 h-16 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
                 {loading === 'docx-download'
@@ -285,9 +239,7 @@ const ResumeModal = ({ open, onClose, data, isTranslating }) => {
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold" style={{ color: 'var(--color-heading)' }}>Download as Word Document</p>
-                <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                  ATS-optimized .docx — supports all languages natively.
-                </p>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>ATS-optimized .docx — supports all languages.</p>
               </div>
             </button>
           </div>

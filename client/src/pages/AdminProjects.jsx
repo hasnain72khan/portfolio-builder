@@ -12,6 +12,7 @@ const AdminProjects = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ title: '', pageType: '', description: '', image: '', techStack: '', liveLink: '', githubLink: '' });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -42,6 +43,7 @@ const AdminProjects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     const payload = {
       ...form,
       techStack: typeof form.techStack === 'string' ? form.techStack.split(',').map(s => s.trim()).filter(Boolean) : form.techStack,
@@ -57,7 +59,7 @@ const AdminProjects = () => {
       closeModal();
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
-    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add project.'); }
+    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add project.'); } finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -101,7 +103,7 @@ const AdminProjects = () => {
 
       <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onPageChange={handlePageChange} />
 
-      <Modal open={showModal} title={editItem ? 'Edit Project' : 'Add New Project'} submitLabel={editItem ? 'Update Project' : 'Save Project'} onClose={closeModal} onSubmit={handleSubmit}>
+      <Modal open={showModal} title={editItem ? 'Edit Project' : 'Add New Project'} submitLabel={editItem ? 'Update Project' : 'Save Project'} onClose={closeModal} onSubmit={handleSubmit} saving={saving}>
         <FormField label="Project Title" required placeholder="e.g. Portfolio Website, Mobile App, Brand Identity" value={form.title} onChange={set('title')} />
         <FormField label="Project Type" placeholder="e.g. Web App, Mobile App, Landing Page, Logo Design, E-commerce" value={form.pageType} onChange={set('pageType')} />
         <FormField label="Tools / Tech Stack" placeholder="e.g. React, Figma, Photoshop, Node.js, WordPress (comma separated)" value={form.techStack} onChange={set('techStack')} />

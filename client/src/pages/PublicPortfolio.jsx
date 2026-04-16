@@ -51,19 +51,17 @@ const PublicPortfolio = () => {
 
   /* Apply custom accent color */
   useEffect(() => {
-    if (data?.about?.accentColor) {
-      const c = data.about.accentColor;
-      const root = document.documentElement;
-      root.style.setProperty('--color-brand', c);
-      // Parse hex to rgb for rgba usage
-      const r = parseInt(c.slice(1, 3), 16);
-      const g = parseInt(c.slice(3, 5), 16);
-      const b = parseInt(c.slice(5, 7), 16);
-      root.style.setProperty('--brand-rgb', `${r},${g},${b}`);
-    }
+    if (!data?.about?.accentColor) return;
+    const c = data.about.accentColor;
+    const root = document.documentElement;
+    root.style.setProperty('--color-brand', c);
+    const r = parseInt(c.slice(1, 3), 16);
+    const g = parseInt(c.slice(3, 5), 16);
+    const b = parseInt(c.slice(5, 7), 16);
+    root.style.setProperty('--brand-rgb', `${r},${g},${b}`);
     return () => {
-      document.documentElement.style.removeProperty('--color-brand');
-      document.documentElement.style.removeProperty('--brand-rgb');
+      root.style.removeProperty('--color-brand');
+      root.style.removeProperty('--brand-rgb');
     };
   }, [data]);
 
@@ -220,10 +218,12 @@ const PublicPortfolio = () => {
         </button>
       )}
 
-      <ChatWidget
-        ownerName={displayName} ownerEmail={about?.email || ''}
-        ownerPhone={about?.phone || ''} ownerAvatar={about?.avatar || ''}
-      />
+      {!mobileNav && (
+        <ChatWidget
+          ownerName={displayName} ownerEmail={about?.email || ''}
+          ownerPhone={about?.phone || ''} ownerAvatar={about?.avatar || ''}
+        />
+      )}
       <ResumeModal
         open={showResumeModal} onClose={() => setShowResumeModal(false)}
         data={translatedResumeData || { about, skills, experience, education, services, username }}

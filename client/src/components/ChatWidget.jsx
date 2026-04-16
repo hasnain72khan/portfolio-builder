@@ -20,6 +20,12 @@ const ChatWidget = ({ ownerName = '', ownerEmail = '', ownerPhone = '', ownerAva
       `Hi ${ownerName || 'there'}! I'm ${name || 'a visitor'} from your portfolio.\n\n${message}`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
+    // Track contact click
+    const uMatch = window.location.pathname.match(/\/portfolio\/([^/]+)/);
+    if (uMatch) fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/analytics/track/${uMatch[1]}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'contact_click', section: 'whatsapp' }),
+    }).catch(() => {});
     setSent(true);
   };
 
@@ -30,6 +36,12 @@ const ChatWidget = ({ ownerName = '', ownerEmail = '', ownerPhone = '', ownerAva
       `Hi ${ownerName || 'there'},\n\nYou have a new message from your portfolio.\n\nFrom: ${name || 'Anonymous'}\n\nMessage:\n${message}`
     );
     window.open(`mailto:${ownerEmail}?subject=${subject}&body=${body}`, '_blank');
+    // Track contact click
+    const uMatch = window.location.pathname.match(/\/portfolio\/([^/]+)/);
+    if (uMatch) fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/analytics/track/${uMatch[1]}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'contact_click', section: 'email' }),
+    }).catch(() => {});
     setSent(true);
   };
 

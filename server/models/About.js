@@ -22,6 +22,7 @@ const AboutSchema = new mongoose.Schema({
   accentColor:  { type: String, default: '#7c3aed' },
   template:     { type: String, default: 'sidebar', enum: ['sidebar', 'single-page', 'minimal'] },
   language:     { type: String, default: 'en' },
+  theme:        { type: String, default: 'default' },
 });
 
 module.exports = mongoose.model('About', AboutSchema);

@@ -27,12 +27,12 @@ const MinimalLayout = ({ data, translatedResumeData, isTranslating, displayName,
           <button onClick={() => setShowResumeModal(true)}
             className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white"
             style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
-            <Download size={13} /> Download Resume
+            <Download size={13} /> Resume
           </button>
           <button onClick={() => setIsDark(d => !d)} className="p-2 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
             {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} style={{ color: 'var(--color-brand)' }} />}
           </button>
-          <ShareButton name={displayName} title={about?.title || ''} />
+          <ShareButton name={displayName} title={about?.title || ''} dropUp={false} />
         </div>
       </nav>
 

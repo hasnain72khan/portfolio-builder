@@ -4,6 +4,8 @@ import { ArrowLeft, Save, X, Upload, FileUp } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import Spinner from '../components/Spinner';
+import { compressImage } from '../utils/compressImage';
 import { parseLinkedInText } from '../utils/parseLinkedInPDF';
 
 const AdminAbout = () => {
@@ -16,6 +18,7 @@ const AdminAbout = () => {
     accentColor: '#7c3aed',
     template: 'sidebar',
     language: 'en',
+    theme: 'default',
   });
   const [loading, setLoading] = useState(true);
   const [toast, setToast]     = useState(null);
@@ -46,13 +49,19 @@ const AdminAbout = () => {
       });
   }, [user]);
 
+  const [saving, setSaving] = useState(false);
+
   const handleSave = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       await api.put('/about', form);
       showToast('About info saved successfully.');
+      setTimeout(() => navigate('/admin'), 800);
     } catch {
       showToast('Failed to save.', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -60,7 +69,10 @@ const AdminAbout = () => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setForm(f => ({ ...f, avatar: reader.result }));
+    reader.onload = async () => {
+      const compressed = await compressImage(reader.result, 400, 0.75);
+      setForm(f => ({ ...f, avatar: compressed }));
+    };
     reader.readAsDataURL(file);
   };
 
@@ -70,40 +82,43 @@ const AdminAbout = () => {
   const blurStyle  = (e) => (e.target.style.boxShadow = 'none');
   const set        = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }));
 
-  const linkedinFileRef = useRef(null);
-  const handleLinkedInImport = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const parsed = parseLinkedInText(reader.result);
-      if (!parsed) return showToast('Could not parse file. Try a .txt export.', 'error');
-      // Merge parsed data into form (don't overwrite existing non-empty fields)
-      setForm(f => ({
-        ...f,
-        name: f.name || parsed.name || '',
-        title: f.title || parsed.title || '',
-        bio: f.bio || parsed.bio || '',
-        email: f.email || parsed.email || '',
-        phone: f.phone || parsed.phone || '',
-        linkedin: f.linkedin || parsed.linkedin || '',
-        city: f.city || (parsed.location ? parsed.location.split(',')[0]?.trim() : ''),
-        country: f.country || (parsed.location ? parsed.location.split(',')[1]?.trim() : ''),
-      }));
-      // Save experience, education, skills to backend
-      if (parsed.experience?.length) {
-        parsed.experience.forEach(exp => api.post('/experience', exp).catch(() => {}));
-      }
-      if (parsed.education?.length) {
-        parsed.education.forEach(edu => api.post('/education', edu).catch(() => {}));
-      }
-      if (parsed.skills?.length) {
-        parsed.skills.forEach(sk => api.post('/skills', sk).catch(() => {}));
-      }
-      showToast(`Imported: ${parsed.experience?.length || 0} jobs, ${parsed.education?.length || 0} education, ${parsed.skills?.length || 0} skills`);
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+  const [linkedinModal, setLinkedinModal] = useState(false);
+  const [linkedinText, setLinkedinText] = useState('');
+
+  const handleLinkedInImport = () => {
+    if (!linkedinText.trim()) return showToast('Paste your LinkedIn profile text first', 'error');
+    const parsed = parseLinkedInText(linkedinText);
+    if (!parsed) return showToast('Could not parse the text. Make sure you copied your full LinkedIn profile.', 'error');
+
+    setForm(f => ({
+      ...f,
+      name: parsed.name || f.name,
+      title: parsed.title || f.title,
+      bio: parsed.bio || f.bio,
+      email: parsed.email || f.email,
+      phone: parsed.phone || f.phone,
+      linkedin: parsed.linkedin || f.linkedin,
+      city: parsed.location ? parsed.location.split(',')[0]?.trim() : f.city,
+      country: parsed.location ? parsed.location.split(',')[1]?.trim() : f.country,
+    }));
+
+    let count = 0;
+    if (parsed.experience?.length) {
+      parsed.experience.forEach(exp => api.post('/experience', exp).catch(() => {}));
+      count += parsed.experience.length;
+    }
+    if (parsed.education?.length) {
+      parsed.education.forEach(edu => api.post('/education', edu).catch(() => {}));
+      count += parsed.education.length;
+    }
+    if (parsed.skills?.length) {
+      parsed.skills.forEach(sk => api.post('/skills', sk).catch(() => {}));
+      count += parsed.skills.length;
+    }
+
+    showToast(`Imported ${count} items from LinkedIn`);
+    setLinkedinModal(false);
+    setLinkedinText('');
   };
 
   if (loading) return (
@@ -126,8 +141,7 @@ const AdminAbout = () => {
           </button>
           <h2 className="text-xl font-bold text-white tracking-tight">About Management</h2>
           <div className="flex items-center gap-2">
-            <input ref={linkedinFileRef} type="file" accept=".txt,.text" className="hidden" onChange={handleLinkedInImport} />
-            <button type="button" onClick={() => linkedinFileRef.current?.click()}
+            <button type="button" onClick={() => setLinkedinModal(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-400 transition-all hover:-translate-y-0.5"
               style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
               <FileUp size={14} /> Import LinkedIn
@@ -142,7 +156,7 @@ const AdminAbout = () => {
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Identity</h3>
 
             {/* Avatar preview + upload */}
-            <div className="flex items-center gap-5 mb-2">
+            <div className="mb-2">
               <div
                 className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden flex items-center justify-center text-2xl font-extrabold text-white cursor-pointer relative group"
                 style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
@@ -152,38 +166,16 @@ const AdminAbout = () => {
                   ? <img src={form.avatar} alt="avatar" className="w-full h-full object-cover" />
                   : (form.name ? form.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'HK')
                 }
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
-                  <Upload size={18} className="text-white" />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center rounded-2xl gap-1">
+                  {form.avatar
+                    ? <X size={16} className="text-white" onClick={(e) => { e.stopPropagation(); setForm(f => ({ ...f, avatar: '' })); }} />
+                    : <Upload size={16} className="text-white" />
+                  }
+                  <span className="text-[9px] text-white/80">{form.avatar ? 'Remove' : 'Upload'}</span>
                 </div>
               </div>
-              <div className="flex-1 space-y-2">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarFile}
-                />
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-                  style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.3)' }}
-                >
-                  <Upload size={15} /> Upload Photo
-                </button>
-                {form.avatar && (
-                  <button
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, avatar: '' }))}
-                    className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-red-400 transition-colors"
-                  >
-                    <X size={12} /> Remove photo
-                  </button>
-                )}
-                <p className="text-[11px] text-slate-600">JPG, PNG, WebP. Shows initials if empty.</p>
-              </div>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarFile} />
+              <p className="text-[10px] text-slate-600 mt-1.5">Click photo to {form.avatar ? 'change or remove' : 'upload'}</p>
             </div>
 
             <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
@@ -218,17 +210,17 @@ const AdminAbout = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Accent Color</label>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <input
                   type="color"
                   value={form.accentColor || '#7c3aed'}
-                  onChange={e => setForm(f => ({ ...f, accentColor: e.target.value }))}
+                  onChange={e => setForm(f => ({ ...f, accentColor: e.target.value, theme: 'default' }))}
                   className="w-10 h-10 rounded-lg cursor-pointer border-0"
                   style={{ background: 'transparent' }}
                 />
                 <span className="text-sm text-slate-400 font-mono">{form.accentColor || '#7c3aed'}</span>
                 <div className="flex gap-2 ml-2">
-                  {['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4'].map(c => (
+                  {['#7c3aed', '#3b82f6', '#10b981', '#f97316', '#ef4444', '#ec4899', '#a3e635'].map(c => (
                     <button key={c} type="button" onClick={() => setForm(f => ({ ...f, accentColor: c }))}
                       className="w-6 h-6 rounded-full transition-transform hover:scale-125"
                       style={{ background: c, border: form.accentColor === c ? '2px solid white' : '2px solid transparent' }} />
@@ -364,15 +356,50 @@ const AdminAbout = () => {
 
           <button
             type="submit"
-            className="w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5"
+            disabled={saving}
+            className="w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5 disabled:opacity-60"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
           >
-            <Save size={16} /> Save Changes
+            {saving ? <Spinner size={20} color="#fff" /> : <><Save size={16} /> Save Changes</>}
           </button>
         </form>
       </div>
 
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* LinkedIn Import Modal */}
+      {linkedinModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} onClick={() => setLinkedinModal(false)}>
+          <div className="rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto animate-slide-up" style={{ background: '#16161e', border: '1px solid rgba(255,255,255,0.08)' }} onClick={e => e.stopPropagation()}>
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <h3 className="text-base font-bold text-white">Import from LinkedIn</h3>
+              <p className="text-[11px] text-slate-500 mt-1">Go to your LinkedIn profile → click "More" → "Save to PDF" → open the PDF → Select All (Ctrl+A) → Copy (Ctrl+C) → Paste below</p>
+            </div>
+            <div className="p-5 space-y-4">
+              <textarea
+                rows={12}
+                placeholder="Paste your LinkedIn profile text here..."
+                className="w-full rounded-xl px-4 py-3 text-slate-200 placeholder:text-slate-600 outline-none text-sm resize-none"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                value={linkedinText}
+                onChange={e => setLinkedinText(e.target.value)}
+              />
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setLinkedinModal(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-slate-400 transition-all"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  Cancel
+                </button>
+                <button type="button" onClick={handleLinkedInImport}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                  style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                  Import Data
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

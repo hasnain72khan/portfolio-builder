@@ -11,6 +11,7 @@ const AdminEducation = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ degree: '', institution: '', startDate: '', endDate: '', description: '', order: 0 });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -41,6 +42,7 @@ const AdminEducation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editItem) {
         await api.put(`/education/${editItem._id}`, form);
@@ -52,7 +54,7 @@ const AdminEducation = () => {
       closeModal();
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
-    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); }
+    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); } finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -87,7 +89,7 @@ const AdminEducation = () => {
 
       <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onPageChange={handlePageChange} />
 
-      <Modal open={showModal} title={editItem ? 'Edit Education' : 'Add Education'} submitLabel={editItem ? 'Update Education' : 'Save Education'} onClose={closeModal} onSubmit={handleSubmit}>
+      <Modal open={showModal} title={editItem ? 'Edit Education' : 'Add Education'} submitLabel={editItem ? 'Update Education' : 'Save Education'} onClose={closeModal} onSubmit={handleSubmit} saving={saving}>
         <FormField label="Degree / Certificate" required placeholder="e.g. BS Computer Science, MBA, Photography Certificate" value={form.degree} onChange={set('degree')} />
         <FormField label="Institution" required placeholder="e.g. MIT, Coursera, University of London" value={form.institution} onChange={set('institution')} />
         <div className="grid grid-cols-2 gap-4">

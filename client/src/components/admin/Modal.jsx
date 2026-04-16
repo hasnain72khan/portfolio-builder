@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
+import Spinner from '../Spinner';
 
-const Modal = ({ open, title, onClose, onSubmit, submitLabel = 'Save', children }) => {
+const Modal = ({ open, title, onClose, onSubmit, submitLabel = 'Save', saving = false, children }) => {
   if (!open) return null;
 
   return (
@@ -22,10 +23,11 @@ const Modal = ({ open, title, onClose, onSubmit, submitLabel = 'Save', children 
           {children}
           <button
             type="submit"
-            className="w-full py-3 rounded-xl font-bold text-white mt-2 transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5"
+            disabled={saving}
+            className="w-full py-3 rounded-xl font-bold text-white mt-2 flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5 disabled:opacity-60"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
           >
-            {submitLabel}
+            {saving ? <Spinner size={18} color="#fff" /> : submitLabel}
           </button>
         </form>
       </div>

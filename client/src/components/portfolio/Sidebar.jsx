@@ -84,20 +84,21 @@ const Sidebar = ({ about, displayName, initials, active, scrollTo, isDark, setIs
 
     <div className="mx-8 h-px" style={{ background: 'var(--color-border)' }} />
 
-    <div className="px-8 py-6 text-center space-y-3">
-      <button
-        onClick={onResumeClick}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
-        style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
-        <Download size={15} /> Download Resume
-      </button>
-      <button onClick={() => setIsDark(d => !d)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-        style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--color-text-sub)' }}>
-        {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} style={{ color: 'var(--color-brand)' }} />}
-        {isDark ? 'Light Mode' : 'Dark Mode'}
-      </button>
-      <ShareButton name={displayName} title={about?.title || ''} />
+    <div className="px-8 py-6 space-y-3">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onResumeClick}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+          style={{ background: `linear-gradient(135deg, var(--color-brand), rgba(var(--brand-rgb), 0.8))` }}>
+          <Download size={14} /> Resume
+        </button>
+        <ShareButton name={displayName} title={about?.title || ''} />
+        <button onClick={() => setIsDark(d => !d)}
+          className="p-2.5 rounded-xl transition-all"
+          style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
+          {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} style={{ color: 'var(--color-brand)' }} />}
+        </button>
+      </div>
     </div>
   </aside>
 );

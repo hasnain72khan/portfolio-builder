@@ -9,7 +9,7 @@ const Experience  = require('../models/Experience');
 const Education   = require('../models/Education');
 const Testimonial = require('../models/Testimonial');
 
-// GET /api/public/:username — returns full portfolio data (optimized with lean + parallel)
+// GET /api/public/:username
 router.get('/:username', async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username }).select('-password').lean();

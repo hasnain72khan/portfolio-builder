@@ -19,6 +19,7 @@ const AdminServices = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ title: '', description: '', icon: 'Code2', order: 0 });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -49,6 +50,7 @@ const AdminServices = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editItem) {
         await api.put(`/services/${editItem._id}`, form);
@@ -60,7 +62,7 @@ const AdminServices = () => {
       closeModal();
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
-    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add service.'); }
+    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add service.'); } finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -99,7 +101,7 @@ const AdminServices = () => {
 
       <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onPageChange={handlePageChange} />
 
-      <Modal open={showModal} title={editItem ? 'Edit Service' : 'Add Service'} submitLabel={editItem ? 'Update Service' : 'Save Service'} onClose={closeModal} onSubmit={handleSubmit}>
+      <Modal open={showModal} title={editItem ? 'Edit Service' : 'Add Service'} submitLabel={editItem ? 'Update Service' : 'Save Service'} onClose={closeModal} onSubmit={handleSubmit} saving={saving}>
         <FormField label="Service Title" required placeholder="e.g. Web Development, Graphic Design, Photography, Marketing" value={form.title} onChange={set('title')} />
         <FormField label="Description" required rows={3} placeholder="e.g. I create stunning visuals for brands, build responsive websites, manage social media campaigns..." value={form.description} onChange={set('description')} />
         <FormField label="Icon">

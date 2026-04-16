@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Download, FileText, Copy } from 'lucide-react';
 import api from '../api';
 import Toast from '../components/Toast';
+import Spinner from '../components/Spinner';
 import Pagination from '../components/Pagination';
 import generateResumePDF from '../utils/generateResumePDF';
 import generateResumeTwoCol from '../utils/generateResumeTwoCol';
@@ -29,6 +30,7 @@ const AdminResumeVersions = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState({ name: '', template: 'classic', format: 'pdf' });
+  const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -46,6 +48,7 @@ const AdminResumeVersions = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       // Fetch current portfolio data to snapshot
       const [aboutR, skillsR, expR, eduR, svcR] = await Promise.all([
@@ -63,6 +66,7 @@ const AdminResumeVersions = () => {
       setModal(false);
       fetchData(page);
     } catch { showToast('Failed to save', 'error'); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
@@ -166,8 +170,8 @@ const AdminResumeVersions = () => {
                 </div>
               </div>
               <p className="text-[11px] text-slate-600">This will save a snapshot of your current portfolio data with the selected template and format.</p>
-              <button type="submit" className="w-full py-2.5 rounded-xl font-bold text-white" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
-                Save Version
+              <button type="submit" disabled={saving} className="w-full py-2.5 rounded-xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                {saving ? <Spinner size={18} color="#fff" /> : 'Save Version'}
               </button>
             </form>
           </div>

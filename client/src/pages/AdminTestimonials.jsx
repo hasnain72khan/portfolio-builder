@@ -12,6 +12,7 @@ const AdminTestimonials = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ name: '', role: '', text: '', rating: 5, source: '', sourceUrl: '', order: 0 });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -42,6 +43,7 @@ const AdminTestimonials = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editItem) {
         await api.put(`/testimonials/${editItem._id}`, form);
@@ -53,7 +55,7 @@ const AdminTestimonials = () => {
       closeModal();
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
-    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); }
+    } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); } finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -95,7 +97,7 @@ const AdminTestimonials = () => {
 
       <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onPageChange={handlePageChange} />
 
-      <Modal open={showModal} title={editItem ? 'Edit Testimonial' : 'Add Testimonial'} submitLabel={editItem ? 'Update Testimonial' : 'Save Testimonial'} onClose={closeModal} onSubmit={handleSubmit}>
+      <Modal open={showModal} title={editItem ? 'Edit Testimonial' : 'Add Testimonial'} submitLabel={editItem ? 'Update Testimonial' : 'Save Testimonial'} onClose={closeModal} onSubmit={handleSubmit} saving={saving}>
         <FormField label="Client Name" required placeholder="e.g. Sarah Johnson, Ahmed Ali" value={form.name} onChange={set('name')} />
         <FormField label="Client Role / Company" placeholder="e.g. CEO at TechCorp, Freelance Designer" value={form.role} onChange={set('role')} />
         <FormField label="Review Text" required rows={3} placeholder="What did the client say about your work?" value={form.text} onChange={set('text')} />

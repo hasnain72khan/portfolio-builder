@@ -53,6 +53,7 @@ function App() {
           <Route path="/admin/cover-letters" element={<ProtectedRoute><AdminCoverLetters /></ProtectedRoute>} />
           <Route path="/admin/resume-versions" element={<ProtectedRoute><AdminResumeVersions /></ProtectedRoute>} />
           {/* <Route path="/admin/ats" element={<ProtectedRoute><AdminATS /></ProtectedRoute>} /> */}
+          <Route path="/admin/ats" element={<ProtectedRoute><AdminATS /></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

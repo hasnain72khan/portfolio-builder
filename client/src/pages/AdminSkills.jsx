@@ -24,6 +24,7 @@ const AdminSkills = () => {
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast]         = useState(null);
   const [form, setForm]           = useState({ name: '', category: '', level: 'Intermediate' });
+  const [saving, setSaving]       = useState(false);
   const [page, setPage]           = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal]         = useState(0);
@@ -54,6 +55,7 @@ const AdminSkills = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editItem) {
         await api.put(`/skills/${editItem._id}`, form);
@@ -66,6 +68,7 @@ const AdminSkills = () => {
       fetchData(editItem ? page : 1);
       if (!editItem) setPage(1);
     } catch { showToast(editItem ? 'Failed to update.' : 'Failed to add.'); }
+    finally { setSaving(false); }
   };
 
   const openEdit = (item) => {
@@ -115,6 +118,7 @@ const AdminSkills = () => {
         submitLabel={editItem ? 'Update Skill' : 'Save Skill'}
         onClose={closeModal}
         onSubmit={handleSubmit}
+        saving={saving}
       >
         <FormField label="Skill Name" required placeholder="e.g. React.js, Photoshop, Project Management" value={form.name} onChange={set('name')} />
         <FormField label="Category" required placeholder="e.g. Design, Development, Marketing" value={form.category} onChange={set('category')} />

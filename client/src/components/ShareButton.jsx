@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Share2, Copy, Check, X } from 'lucide-react';
 
-const ShareButton = ({ name = '', title = '' }) => {
+const ShareButton = ({ name = '', title = '', dropUp = true }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef(null);
@@ -83,13 +83,13 @@ const ShareButton = ({ name = '', title = '' }) => {
             setOpen(o => !o);
           }
         }}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+        className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
         style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--color-text-sub)' }}>
-        <Share2 size={15} /> Share Portfolio
+        <Share2 size={15} /> <span className="hidden sm:inline">Share</span>
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 rounded-xl overflow-hidden shadow-2xl animate-slide-up"
+        <div className={`absolute ${dropUp ? 'bottom-full mb-2' : 'top-full mt-2'} right-0 w-48 rounded-xl overflow-hidden shadow-2xl animate-slide-up z-50`}
           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
           <div className="p-2 space-y-0.5">
             {platforms.map(p => (
