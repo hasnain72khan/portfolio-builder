@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { Layers, Code2, LogOut, Briefcase, User, GraduationCap, Clock, MessageSquare, BarChart3, FileText, Copy, Search } from 'lucide-react';
+import { Layers, Code2, LogOut, Briefcase, User, GraduationCap, Clock, MessageSquare, BarChart3, FileText, Copy, Search, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useAdminTheme } from '../context/AdminThemeContext';
 
 const capitalizeName = (name) =>
   name ? name.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
 
 const Admin = () => {
   const { user, logout } = useAuth();
+  const { isDark, toggle, theme } = useAdminTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,20 +19,24 @@ const Admin = () => {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-6 pt-16 relative"
-      style={{ background: '#0f0f13' }}
+      style={{ background: theme.bg, color: theme.text }}
     >
-      <button
-        onClick={handleLogout}
-        className="absolute top-4 right-4 flex items-center gap-2 text-slate-500 hover:text-red-400 transition-colors duration-200 text-xs sm:text-sm"
-      >
-        <LogOut size={16} /> Logout
-      </button>
+      <div className="absolute top-4 right-4 flex items-center gap-3">
+        <button onClick={toggle} className="p-2 rounded-lg transition-colors" style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+          aria-label="Toggle theme">
+          {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-slate-600" />}
+        </button>
+        <button onClick={handleLogout}
+          className="flex items-center gap-2 text-slate-500 hover:text-red-400 transition-colors duration-200 text-xs sm:text-sm">
+          <LogOut size={16} /> Logout
+        </button>
+      </div>
 
       <div className="text-center mb-12 animate-fade-in-up">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Dashboard</h1>
-        <p className="text-slate-500 text-sm mt-2">Welcome back, <span className="text-violet-400">{capitalizeName(user?.name)}</span></p>
+        <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: theme.heading }}>Dashboard</h1>
+        <p className="text-sm mt-2" style={{ color: theme.textMuted }}>Welcome back, <span className="text-violet-400">{capitalizeName(user?.name)}</span></p>
         {user?.username && (
-          <p className="text-slate-600 text-xs mt-1">
+          <p className="text-xs mt-1" style={{ color: theme.textMuted }}>
             Your portfolio:{' '}
             <button onClick={() => navigate(`/portfolio/${user.username}`)} className="text-violet-400 hover:underline">
               /portfolio/{user.username}
@@ -52,8 +58,8 @@ const Admin = () => {
             <User size={26} className="text-indigo-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">About</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Edit profile info</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">About</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Edit profile info</span>
           </div>
         </button>
 
@@ -68,8 +74,8 @@ const Admin = () => {
             <Code2 size={26} className="text-violet-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Manage Skills</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Add, remove technical skills</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Manage Skills</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Add, remove technical skills</span>
           </div>
         </button>
 
@@ -84,8 +90,8 @@ const Admin = () => {
             <Layers size={26} className="text-emerald-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Manage Projects</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Add, remove portfolio projects</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Manage Projects</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Add, remove portfolio projects</span>
           </div>
         </button>
 
@@ -100,8 +106,8 @@ const Admin = () => {
             <Briefcase size={26} className="text-amber-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Manage Services</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Add, remove services</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Manage Services</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Add, remove services</span>
           </div>
         </button>
 
@@ -116,8 +122,8 @@ const Admin = () => {
             <Clock size={26} className="text-rose-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Experience</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Work history & roles</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Experience</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Work history & roles</span>
           </div>
         </button>
 
@@ -132,8 +138,8 @@ const Admin = () => {
             <GraduationCap size={26} className="text-teal-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Education</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Degrees & certificates</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Education</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Degrees & certificates</span>
           </div>
         </button>
 
@@ -148,8 +154,8 @@ const Admin = () => {
             <MessageSquare size={26} className="text-pink-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Testimonials</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Client reviews & feedback</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Testimonials</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Client reviews & feedback</span>
           </div>
         </button>
         {/* Analytics */}
@@ -163,8 +169,8 @@ const Admin = () => {
             <BarChart3 size={26} className="text-cyan-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Analytics</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Views & engagement</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Analytics</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Views & engagement</span>
           </div>
         </button>
 
@@ -179,8 +185,8 @@ const Admin = () => {
             <FileText size={26} className="text-orange-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Cover Letters</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Job application letters</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Cover Letters</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Job application letters</span>
           </div>
         </button>
 
@@ -195,8 +201,8 @@ const Admin = () => {
             <Copy size={26} className="text-lime-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">Resume Versions</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Save & manage versions</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">Resume Versions</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Save & manage versions</span>
           </div>
         </button>
 
@@ -211,8 +217,8 @@ const Admin = () => {
             <Search size={26} className="text-sky-400" />
           </div>
           <div>
-            <span className="text-lg font-bold text-white block">ATS Score</span>
-            <span className="text-xs text-slate-500 mt-0.5 block">Check resume vs job description</span>
+            <span style={{color: theme.heading}} className="text-lg font-bold block">ATS Score</span>
+            <span style={{color: theme.textMuted}} className="text-xs mt-0.5 block">Check resume vs job description</span>
           </div>
         </button> */}
 

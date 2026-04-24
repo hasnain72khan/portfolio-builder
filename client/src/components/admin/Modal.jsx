@@ -8,14 +8,17 @@ const Modal = ({ open, title, onClose, onSubmit, submitLabel = 'Save', saving = 
     <div
       className="fixed inset-0 flex items-center justify-center z-50 p-4"
       style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
     >
       <div className="glass rounded-3xl w-full max-w-lg overflow-hidden animate-slide-up">
         <div
           className="flex justify-between items-center px-6 py-5"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
-          <h3 className="text-lg font-bold text-white">{title}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors">
+          <h3 id="modal-title" className="text-lg font-bold text-white">{title}</h3>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300 transition-colors" aria-label="Close dialog">
             <X size={22} />
           </button>
         </div>

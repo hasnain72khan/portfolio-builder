@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Trash2, Download, FileText, Copy } from 'lucide-react'
 import api from '../api';
 import Toast from '../components/Toast';
 import Spinner from '../components/Spinner';
+import ConfirmDialog from '../components/ConfirmDialog';
 import Pagination from '../components/Pagination';
 import generateResumePDF from '../utils/generateResumePDF';
 import generateResumeTwoCol from '../utils/generateResumeTwoCol';
@@ -31,6 +32,7 @@ const AdminResumeVersions = () => {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState({ name: '', template: 'classic', format: 'pdf' });
   const [saving, setSaving] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -70,7 +72,7 @@ const AdminResumeVersions = () => {
   };
 
   const handleDelete = async (id) => {
-    try { await api.delete(`/resume-versions/${id}`); showToast('Deleted'); fetchData(page); }
+    try { await api.delete(`/resume-versions/${id}`); showToast('Deleted'); setDeleteId(null); fetchData(page); }
     catch { showToast('Failed to delete', 'error'); }
   };
 
@@ -128,7 +130,7 @@ const AdminResumeVersions = () => {
                   <button onClick={() => handleDownload(item)} className="p-2 rounded-lg text-slate-400 hover:text-blue-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     <Download size={15} />
                   </button>
-                  <button onClick={() => handleDelete(item._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <button onClick={() => setDeleteId(item._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     <Trash2 size={15} />
                   </button>
                 </div>

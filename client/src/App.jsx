@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AdminThemeProvider } from './context/AdminThemeContext';
+import InstallPWA from './components/InstallPWA';
 
 import Landing           from './pages/Landing';
 import Register           from './pages/Register';
@@ -25,6 +27,7 @@ import PublicPortfolio    from './pages/PublicPortfolio';
 function App() {
   return (
     <AuthProvider>
+      <AdminThemeProvider>
       <Router>
         <Routes>
           {/* Auth */}
@@ -52,10 +55,11 @@ function App() {
           <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
           <Route path="/admin/cover-letters" element={<ProtectedRoute><AdminCoverLetters /></ProtectedRoute>} />
           <Route path="/admin/resume-versions" element={<ProtectedRoute><AdminResumeVersions /></ProtectedRoute>} />
-          {/* <Route path="/admin/ats" element={<ProtectedRoute><AdminATS /></ProtectedRoute>} /> */}
           <Route path="/admin/ats" element={<ProtectedRoute><AdminATS /></ProtectedRoute>} />
         </Routes>
       </Router>
+      <InstallPWA />
+      </AdminThemeProvider>
     </AuthProvider>
   );
 }

@@ -7,6 +7,7 @@ import Toast from '../components/Toast';
 import Spinner from '../components/Spinner';
 import { compressImage } from '../utils/compressImage';
 import { parseLinkedInText } from '../utils/parseLinkedInPDF';
+import { isEmail, isUrl, isPhone } from '../utils/validate';
 
 const AdminAbout = () => {
   const [form, setForm] = useState({
@@ -53,6 +54,12 @@ const AdminAbout = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    // Validate
+    if (form.email && !isEmail(form.email)) return showToast('Invalid email format', 'error');
+    if (form.linkedin && !isUrl(form.linkedin) && !form.linkedin.includes('linkedin.com')) return showToast('Invalid LinkedIn URL', 'error');
+    if (form.github && !isUrl(form.github) && !form.github.includes('github.com')) return showToast('Invalid GitHub URL', 'error');
+    if (form.phone && !isPhone(form.phone)) return showToast('Invalid phone format', 'error');
+    if (form.resumeUrl && !isUrl(form.resumeUrl)) return showToast('Invalid resume URL', 'error');
     setSaving(true);
     try {
       await api.put('/about', form);

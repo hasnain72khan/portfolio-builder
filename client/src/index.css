@@ -98,6 +98,28 @@ button, a, [role="button"] {
   cursor: pointer;
 }
 
+:root.light .glass {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Admin Light Mode ──────────────────────────────────────── */
+:root.admin-light .glass {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+:root.admin-light select {
+  background-color: #ffffff;
+  color: #374151;
+  color-scheme: light;
+}
+
+:root.admin-light select option {
+  background-color: #ffffff;
+  color: #374151;
+}
+
 /* ─── Hero gradient background ──────────────────────────────── */
 .hero-gradient {
   background:

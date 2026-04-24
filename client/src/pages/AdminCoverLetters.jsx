@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Pencil, Trash2, FileText, Download, X } from 'lucide-r
 import api from '../api';
 import Toast from '../components/Toast';
 import Spinner from '../components/Spinner';
+import ConfirmDialog from '../components/ConfirmDialog';
 import Pagination from '../components/Pagination';
 import { jsPDF } from 'jspdf';
 
@@ -17,6 +18,7 @@ const AdminCoverLetters = () => {
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -47,7 +49,7 @@ const AdminCoverLetters = () => {
   };
 
   const handleDelete = async (id) => {
-    try { await api.delete(`/cover-letters/${id}`); showToast('Deleted'); fetchData(page); }
+    try { await api.delete(`/cover-letters/${id}`); showToast('Deleted'); setDeleteId(null); fetchData(page); }
     catch { showToast('Failed to delete', 'error'); }
   };
 
@@ -126,7 +128,7 @@ const AdminCoverLetters = () => {
                   <button onClick={() => openEdit(item)} className="p-2 rounded-lg text-slate-400 hover:text-violet-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     <Pencil size={15} />
                   </button>
-                  <button onClick={() => handleDelete(item._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <button onClick={() => setDeleteId(item._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 transition-colors" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     <Trash2 size={15} />
                   </button>
                 </div>
@@ -173,6 +175,8 @@ const AdminCoverLetters = () => {
         </div>
       )}
 
+      <ConfirmDialog open={!!deleteId} title="Delete Cover Letter" message="This cover letter will be permanently deleted."
+        onConfirm={() => handleDelete(deleteId)} onCancel={() => setDeleteId(null)} />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
